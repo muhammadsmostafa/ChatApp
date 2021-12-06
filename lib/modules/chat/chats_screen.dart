@@ -16,7 +16,7 @@ class ChatsScreen extends StatelessWidget {
       builder: (context, state){
       List<UserModel> chatUsers = AppCubit.get(context).chatUsers;
         return BuildCondition(
-          condition: chatUsers.isNotEmpty,
+          condition: chatUsers.isNotEmpty || AppCubit.get(context).following.isNotEmpty,
           builder: (context) => RefreshIndicator(
           onRefresh: () async {
             await AppCubit.get(context).getChats().then((value){
