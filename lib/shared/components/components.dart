@@ -79,7 +79,8 @@ Widget defaultTextButton({
 
 Widget myDivider() => Padding (
   padding: const EdgeInsetsDirectional.only(
-    start:20.0,
+    start:10.0,
+    end: 10.0,
   ),
   child: Container(
     width: double.infinity,

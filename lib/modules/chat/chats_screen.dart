@@ -52,6 +52,7 @@ class ChatsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    myDivider(),
                   ],
                 )
                 :

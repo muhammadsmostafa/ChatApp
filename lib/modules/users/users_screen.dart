@@ -5,6 +5,7 @@ import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/modules/chat_details/chat_details_screen.dart';
 import 'package:chat_app/modules/user_profile/user_profile_screen.dart';
 import 'package:chat_app/shared/components/components.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
