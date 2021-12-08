@@ -29,7 +29,6 @@ class ImageBioScreen extends StatelessWidget {
                   defaultTextButton(
                       function: ()
                       {
-                        AppCubit.get(context).getUserData();
                         AppCubit.get(context).getChats();
                         AppCubit.get(context).getFollowing();
                         navigateAndFinish(context, AppLayout());
