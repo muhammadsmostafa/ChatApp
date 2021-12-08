@@ -1,3 +1,4 @@
+import 'package:chat_app/layout/cubit/cubit.dart';
 import 'package:chat_app/shared/styles/icon_broken.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -119,7 +120,9 @@ void showToast({
   fontSize: 16.0,
 );
 
-Widget emailNotVerifyed() => Container(
+Widget emailNotVerifyed({
+  required context,
+}) => Container(
   color: Colors.amber,
   height: 40,
   child: Padding(
@@ -142,7 +145,10 @@ Widget emailNotVerifyed() => Container(
         TextButton(
           onPressed: ()
           {
-            FirebaseAuth.instance.currentUser!.sendEmailVerification();
+            FirebaseAuth.instance.currentUser!.sendEmailVerification().then((value){
+              AppCubit.get(context).logout();
+              showToast(message: 'Verify your mail and login again');
+            });
           },
           child: Text(
               'SEND'

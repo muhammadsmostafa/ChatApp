@@ -26,7 +26,7 @@ class ProfileScreen extends StatelessWidget {
           children:
           [
             if(!FirebaseAuth.instance.currentUser!.emailVerified)
-              emailNotVerifyed(),
+              emailNotVerifyed(context: context),
             SizedBox(height: 10,),
             InkWell(
               onTap: ()

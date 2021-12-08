@@ -29,7 +29,7 @@ class ChatsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if(!FirebaseAuth.instance.currentUser!.emailVerified)
-                    emailNotVerifyed(),
+                    emailNotVerifyed(context: context),
                 AppCubit.get(context).following.isNotEmpty
                 ?
                 Column(

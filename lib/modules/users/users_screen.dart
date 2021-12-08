@@ -27,7 +27,7 @@ class UsersScreen extends StatelessWidget {
             child: Column(
               children: [
                 if(!FirebaseAuth.instance.currentUser!.emailVerified)
-                  emailNotVerifyed(),
+                  emailNotVerifyed(context: context),
                 Expanded(
                   child: ListView.separated(
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
