@@ -77,11 +77,13 @@ class ProfileScreen extends StatelessWidget {
               child: defaultButton(
                 background: Colors.red,
                   function: (){
-                    AppCubit.get(context).logout()
-                    .then((value){
-                      CasheHelper.saveData(key: 'uId', value: '');
-                      uId='';
-                      navigateAndFinish(context, LoginScreen());
+                    AppCubit.get(context).changeBottomNav(0);
+                      navigateAndFinish(context, LoginScreen()).then((value){
+                        AppCubit.get(context).logout()
+                            .then((value){
+                          CasheHelper.saveData(key: 'uId', value: '');
+                          uId='';
+                      });
                     });
                   },
                   text: 'logout'),

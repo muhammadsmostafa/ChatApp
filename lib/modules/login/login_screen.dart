@@ -45,7 +45,10 @@ class LoginScreen extends StatelessWidget {
               showToast(
                 message: 'Login Successfully',
               );
-              navigateAndFinish(context,
+              AppCubit.get(context).getChats();
+              AppCubit.get(context).getFollowing();
+              navigateAndFinish(
+                context,
                 const AppLayout(),
               );
             });

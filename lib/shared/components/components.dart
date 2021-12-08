@@ -100,7 +100,7 @@ void navigateTo(context , widget) => Navigator.push(
   ),
 );
 
-void navigateAndFinish(context , widget) => Navigator.pushAndRemoveUntil(
+Future <void> navigateAndFinish(context , widget) => Navigator.pushAndRemoveUntil(
     context,
     MaterialPageRoute(
       builder: (context) => widget,
@@ -147,8 +147,10 @@ Widget emailNotVerifyed({
           onPressed: ()
           {
             FirebaseAuth.instance.currentUser!.sendEmailVerification().then((value){
-              navigateAndFinish(context, LoginScreen());
-              AppCubit.get(context).logout();
+              AppCubit.get(context).changeBottomNav(0);
+              navigateAndFinish(context, LoginScreen()).then((value){
+                AppCubit.get(context).logout();
+              });
               showToast(message: 'Verify your mail and login again');
             });
           },

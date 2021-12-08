@@ -109,6 +109,8 @@ class AppCubit extends Cubit<AppStates> {
     'Profile',
   ];
 
+  bool empty = false;
+
   void changeBottomNav(int index) {
     if (index == 4)
       {
@@ -118,6 +120,7 @@ class AppCubit extends Cubit<AppStates> {
       {
         if(index == 0)
         {
+          empty = false;
           if(getFollowingFinished)
             {
               getFollowing();

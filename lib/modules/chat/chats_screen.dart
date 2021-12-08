@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatsScreen extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit,AppStates>(
@@ -21,6 +22,7 @@ class ChatsScreen extends StatelessWidget {
           builder: (context) => RefreshIndicator(
           onRefresh: () async {
             await AppCubit.get(context).getChats().then((value){
+              AppCubit.get(context).empty=false;
               AppCubit.get(context).changeBottomNav(4);
               AppCubit.get(context).getFollowing();
             });
@@ -75,8 +77,14 @@ class ChatsScreen extends StatelessWidget {
           fallback: (context)  {
             Future.delayed(Duration(milliseconds: 750)).then((value){
               AppCubit.get(context).changeBottomNav(4);
+              if(chatUsers.isEmpty)
+                AppCubit.get(context).empty=true;
             });
-            return LinearProgressIndicator();
+            return AppCubit.get(context).empty
+                ?
+                Center(child: Text('No Messages Yet'))
+                :
+            LinearProgressIndicator();
           },
         );
       },
