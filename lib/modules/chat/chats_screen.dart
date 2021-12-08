@@ -82,7 +82,20 @@ class ChatsScreen extends StatelessWidget {
             });
             return AppCubit.get(context).empty
                 ?
-                Center(child: Text('No Messages Yet'))
+                Column(
+                  children: [
+                    if(!FirebaseAuth.instance.currentUser!.emailVerified)
+                      emailNotVerifyed(context: context),
+                    Expanded(
+                      child: Center(
+                        child: Text(
+                            'No Messages Yet',
+                          style: Theme.of(context).textTheme.subtitle1,
+                        ),
+                      ),
+                    ),
+                  ],
+                )
                 :
             LinearProgressIndicator();
           },
