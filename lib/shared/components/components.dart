@@ -1,3 +1,5 @@
+import 'package:chat_app/shared/styles/icon_broken.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -115,4 +117,38 @@ void showToast({
   gravity: ToastGravity.BOTTOM,
   timeInSecForIosWeb: 5,
   fontSize: 16.0,
+);
+
+Widget emailNotVerifyed() => Container(
+  color: Colors.amber,
+  height: 40,
+  child: Padding(
+    padding: const EdgeInsetsDirectional.only(start: 10),
+    child: Row(
+      children: [
+        Icon(
+            IconBroken.Shield_Fail
+        ),
+        SizedBox(
+          width: 10,
+        ),
+        Text(
+          'Please verify your email',
+          style: TextStyle(
+            color: Colors.white,
+          )
+        ),
+        Spacer(),
+        TextButton(
+          onPressed: ()
+          {
+            FirebaseAuth.instance.currentUser!.sendEmailVerification();
+          },
+          child: Text(
+              'SEND'
+          ),
+        )
+      ],
+    ),
+  ),
 );

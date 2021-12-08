@@ -5,6 +5,7 @@ import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/modules/chat_details/chat_details_screen.dart';
 import 'package:chat_app/modules/user_profile/user_profile_screen.dart';
 import 'package:chat_app/shared/components/components.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,15 +24,23 @@ class UsersScreen extends StatelessWidget {
             onRefresh: () async {
               await AppCubit.get(context).getAllUsers();
             },
-            child: ListView.separated(
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                itemBuilder: (context, index) => buildChatItem(context, AppCubit.get(context).users[index]),
-                separatorBuilder: (context, index) => myDivider(),
-                itemCount: AppCubit.get(context).users.length > 20
-                ?
-                20
-                :
-                AppCubit.get(context).users.length
+            child: Column(
+              children: [
+                if(!FirebaseAuth.instance.currentUser!.emailVerified)
+                  emailNotVerifyed(),
+                Expanded(
+                  child: ListView.separated(
+                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                      itemBuilder: (context, index) => buildChatItem(context, AppCubit.get(context).users[index]),
+                      separatorBuilder: (context, index) => myDivider(),
+                      itemCount: AppCubit.get(context).users.length > 20
+                      ?
+                      20
+                      :
+                      AppCubit.get(context).users.length
+                  ),
+                ),
+              ],
             ),
           ),
           fallback: (context) => LinearProgressIndicator(),

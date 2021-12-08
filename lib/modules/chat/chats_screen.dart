@@ -5,6 +5,7 @@ import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/modules/chat_details/chat_details_screen.dart';
 import 'package:chat_app/modules/user_profile/user_profile_screen.dart';
 import 'package:chat_app/shared/components/components.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -27,6 +28,8 @@ class ChatsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if(!FirebaseAuth.instance.currentUser!.emailVerified)
+                    emailNotVerifyed(),
                 AppCubit.get(context).following.isNotEmpty
                 ?
                 Column(
