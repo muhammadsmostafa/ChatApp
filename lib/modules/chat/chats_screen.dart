@@ -57,7 +57,6 @@ class ChatsScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    myDivider(),
                   ],
                 )
                 :
@@ -66,7 +65,7 @@ class ChatsScreen extends StatelessWidget {
                   child: ListView.separated(
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index]),
+                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index], AppCubit.get(context).lastMessages[index], AppCubit.get(context).dateTime[index]),
                       separatorBuilder: (context, index) => myDivider(),
                       itemCount: chatUsers.length
                   ),
@@ -75,7 +74,7 @@ class ChatsScreen extends StatelessWidget {
             ),
           ),
           fallback: (context)  {
-            Future.delayed(Duration(milliseconds: 750)).then((value){
+            Future.delayed(Duration(milliseconds: 1500)).then((value){
               AppCubit.get(context).changeBottomNav(4);
               if(chatUsers.isEmpty)
                 AppCubit.get(context).empty=true;
@@ -104,7 +103,7 @@ class ChatsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildChatItem(context, UserModel model) => Padding(
+  Widget buildChatItem(context, UserModel model, String message, String dateTime) => Padding(
     padding: const EdgeInsets.all(20.0),
     child: Row(
         children:
@@ -144,13 +143,26 @@ class ChatsScreen extends StatelessWidget {
                     '${model.name}',
                     style: Theme.of(context).textTheme.bodyText1,
                   ),
-                  Text(
-                    '',
-                    style: const TextStyle(
-                      color: Colors.grey,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    children: [
+                      Text(
+                        '${message}',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Spacer(),
+                      Text(
+                        '${dateTime}',
+                        style: const TextStyle(
+                          color: Colors.grey,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ],
               ),

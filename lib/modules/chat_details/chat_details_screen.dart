@@ -76,7 +76,7 @@ class ChatDetailsScreen extends StatelessWidget
                                   return buildMyMessage(message);
                                 }
                                 else {
-                                  return buildMessage(message);
+                                  return buildMessage(message, userModel.image);
                                 }
                               },
                               separatorBuilder: (context, index) => const SizedBox(height: 15,),
@@ -204,40 +204,51 @@ class ChatDetailsScreen extends StatelessWidget
   }
 }
 
-Widget buildMessage(MessageModel messageModel) => Align(
+Widget buildMessage(MessageModel messageModel , String? image) => Align(
   alignment: AlignmentDirectional.centerStart,
-  child: Container(
-    decoration: BoxDecoration(
-      color: Colors.grey[300],
-      borderRadius: const BorderRadiusDirectional.only(
-        bottomEnd : Radius.circular(10),
-        topEnd : Radius.circular(10),
-        topStart : Radius.circular(10),
+  child: Row(
+    children: [
+      CircleAvatar(
+        radius: 15,
+        backgroundImage: NetworkImage(
+            '${image}'
+        ),
       ),
-    ),
-    padding: const EdgeInsets.symmetric(
-        vertical: 5,
-        horizontal: 10
-    ),
-    child: messageModel.image==''
-        ?
-    Text(
-        '${messageModel.message}'
-    )
-        :
-    Column(
-      children: [
-        Image(image: NetworkImage(
-          '${messageModel.image}',
+      SizedBox(width: 5,),
+      Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[300],
+          borderRadius: const BorderRadiusDirectional.only(
+            bottomEnd : Radius.circular(10),
+            topEnd : Radius.circular(10),
+            topStart : Radius.circular(10),
+          ),
         ),
-          width: 250,
+        padding: const EdgeInsets.symmetric(
+            vertical: 5,
+            horizontal: 10
         ),
-        if(messageModel.message != '')
-          Text(
-            '${messageModel.message}',
-          )
-      ],
-    ),
+        child: messageModel.image==''
+            ?
+        Text(
+            '${messageModel.message}'
+        )
+            :
+        Column(
+          children: [
+            Image(image: NetworkImage(
+              '${messageModel.image}',
+            ),
+              width: 250,
+            ),
+            if(messageModel.message != '')
+              Text(
+                '${messageModel.message}',
+              )
+          ],
+        ),
+      ),
+    ],
   ),
 );
 

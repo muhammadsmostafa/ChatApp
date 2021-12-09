@@ -30,60 +30,34 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+
   List<UserModel> chatUsers =[];
   bool getChatsFinished = true;
-
-  Future<dynamic> getChats() async{
+  Future <void> getChats() async {
     emit(AppGetChatsLoadingState());
-    chatUsers=[];
     getChatsFinished=false;
+    chatUsers=[];
     FirebaseFirestore.instance
         .collection('users')
+        .doc(uId)
+        .collection('chats')
         .get()
-        .then((value) {
-      for (var element in value.docs) {
+        .then((value){
+      for(var element in value.docs)
+      {
+        getLastMessage(hisUID: element.id);
         FirebaseFirestore.instance
             .collection('users')
-            .doc(uId)
-            .collection('chats')
             .doc(element.id)
-            .collection('messages')
             .get()
-            .then((value) {
-          if (value.docs.isNotEmpty) {
-            chatUsers.add(UserModel.fromJson(element.data()));
-          }
+            .then((value){
+          chatUsers.add(UserModel.fromJson((value.data())));
         });
       }
       emit(AppGetChatsSuccessState());
-      getChatsFinished=true;
-    }).catchError((error)
-    {
-      emit(AppGetChatsErrorState());
     });
+    getChatsFinished=true;
   }
-
-  // Future <void> getChats() async {
-  //   chatUsers = [];
-  //   FirebaseFirestore.instance
-  //       .collection('users')
-  //       .doc(uId)
-  //       .collection('chats')
-  //       .get()
-  //       .then((value){
-  //     for(var element in value.docs)
-  //     {
-  //       FirebaseFirestore.instance
-  //           .collection('users')
-  //           .doc(element.id)
-  //           .get()
-  //           .then((value){
-  //             print(element.id);
-  //         chatUsers.add(UserModel.fromJson((value.data())));
-  //       });
-  //     }
-  //   });
-  // }
 
   Future<void> logout()
   async {
@@ -95,7 +69,6 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   int currentIndex = 0;
-
   List<Widget> screens =
   [
     ChatsScreen(),
@@ -110,7 +83,6 @@ class AppCubit extends Cubit<AppStates> {
   ];
 
   bool empty = false;
-
   void changeBottomNav(int index) {
     if (index == 4)
       {
@@ -121,15 +93,13 @@ class AppCubit extends Cubit<AppStates> {
         if(index == 0)
         {
           empty = false;
-          if(getFollowingFinished)
-            {
-              getFollowing();
-            }
-          if(getChatsFinished) {
+          if(getChatsFinished && getFollowingFinished) {
             getChats();
+            getFollowing();
           }
         }
         if (index == 1) {
+          getLastMessage(hisUID: uId);
           if(getAllUserFinished) {
             getAllUsers();
           }
@@ -242,6 +212,30 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+  void setupChats({
+    required String? receiverId,
+  }) {
+    //set my chat
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId)
+        .collection('chats')
+        .doc(receiverId)
+        .set({'dateTime' : DateTime.now().toString()})
+        .then((value) {
+    });
+
+    //set receiver chat
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(receiverId)
+        .collection('chats')
+        .doc(userModel!.uId)
+        .set({'dateTime' : DateTime.now().toString()})
+        .then((value) {
+    });
+  }
+
   void sendMessage({
     required String? receiverId,
     required String dateTime,
@@ -274,7 +268,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('users')
         .doc(receiverId)
         .collection('chats')
-        .doc(userModel!.uId)
+        .doc(uId)
         .collection('messages')
         .add(model.toMap())
         .then((value) {
@@ -282,6 +276,7 @@ class AppCubit extends Cubit<AppStates> {
     }).catchError((error) {
       emit(AppSendMessageErrorState());
     });
+    setupChats(receiverId: receiverId);
   }
 
   List<MessageModel> messages = [];
@@ -384,8 +379,8 @@ class AppCubit extends Cubit<AppStates> {
   List<UserModel> following = [];
   List<String> followingId = [];
   bool getFollowingFinished = true;
-
   void getFollowing() {
+    emit(AppGetFollowingLoadingState());
     getFollowingFinished = false;
     following = [];
     followingId=[];
@@ -393,7 +388,6 @@ class AppCubit extends Cubit<AppStates> {
         .collection('users')
         .doc(uId)
         .collection('following')
-        .orderBy('dateTime')
         .get()
         .then((value){
        for(var element in value.docs)
@@ -407,7 +401,10 @@ class AppCubit extends Cubit<AppStates> {
                  followingId.add(element.id);
            });
          }
+       emit(AppGetFollowingSuccessState());
        getFollowingFinished = true;
+    }).catchError((error){
+      emit(AppGetChatsErrorState());
     });
   }
 
@@ -433,4 +430,41 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppChangeModeState());
     });
   }
+
+  List<String> lastMessages = [];
+  List<String> dateTime = [];
+  void getLastMessage({
+    required String hisUID,
+  })
+  {
+    lastMessages=[];
+    FirebaseFirestore.instance.collection('users')
+        .doc(uId)
+        .collection('chats')
+        .doc(hisUID)
+        .collection('messages')
+        .orderBy('dateTime' , descending: true)
+        .get()
+        .then((value){
+      FirebaseFirestore.instance.collection('users')
+          .doc(uId)
+          .collection('chats')
+          .doc(hisUID)
+          .collection('messages')
+          .doc(value.docs.first.id)
+          .get()
+          .then((value){
+            if(uId == value['senderId'])
+              {
+                lastMessages.add('You: '+ value['message'].toString());
+                dateTime.add(value['dateTime'].toString());
+              }
+            else {
+          lastMessages.add(value['message'].toString());
+          dateTime.add(value['dateTime'].toString());
+        }
+      });
+    });
+  }
 }
+

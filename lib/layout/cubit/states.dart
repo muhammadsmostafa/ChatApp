@@ -60,6 +60,8 @@ class AppUnfollowSuccessState extends AppStates {}
 
 class AppGetFollowingLoadingState extends AppStates {}
 
+class AppGetFollowingErrorState extends AppStates {}
+
 class AppGetFollowingSuccessState extends AppStates {}
 
 class AppSendMessageErrorState extends AppStates {}
