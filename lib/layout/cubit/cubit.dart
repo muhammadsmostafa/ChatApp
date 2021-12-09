@@ -46,7 +46,6 @@ class AppCubit extends Cubit<AppStates> {
         .then((value){
       for(var element in value.docs)
       {
-        getLastMessage(hisUID: element.id);
         FirebaseFirestore.instance
             .collection('users')
             .doc(element.id)
@@ -100,7 +99,6 @@ class AppCubit extends Cubit<AppStates> {
           }
         }
         if (index == 1) {
-          getLastMessage(hisUID: uId);
           if(getAllUserFinished) {
             getAllUsers();
           }
@@ -403,7 +401,6 @@ class AppCubit extends Cubit<AppStates> {
                  followingId.add(element.id);
            });
          }
-       emit(AppGetFollowingSuccessState());
        getFollowingFinished = true;
     });
   }
@@ -431,35 +428,35 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  List<String> lastMessages = [];
-  List<String> dateTime = [];
-  void getLastMessage({
-    required String hisUID,
-  })
-  {
-    lastMessages=[];
-    dateTime=[];
-    FirebaseFirestore.instance.collection('users')
-        .doc(uId)
-        .collection('chats')
-        .doc(hisUID)
-        .collection('messages')
-        .orderBy('dateTime' , descending: true)
-        .get()
-        .then((value){
-          value.docs.first.reference.get()
-          .then((value){
-            if(uId == value['senderId'])
-              {
-                lastMessages.add('You: '+ value['message'].toString());
-                dateTime.add(value['dateTime'].toString());
-              }
-            else {
-          lastMessages.add(value['message'].toString());
-          dateTime.add(value['dateTime'].toString());
-        }
-      });
-    });
-  }
+  // List<String> lastMessages = [];
+  // List<String> dateTime = [];
+  // void getLastMessage({
+  //   required String hisUID,
+  // })
+  // {
+  //   lastMessages=[];
+  //   dateTime=[];
+  //   FirebaseFirestore.instance.collection('users')
+  //       .doc(uId)
+  //       .collection('chats')
+  //       .doc(hisUID)
+  //       .collection('messages')
+  //       .orderBy('dateTime' , descending: true)
+  //       .get()
+  //       .then((value){
+  //         value.docs.first.reference.get()
+  //         .then((value){
+  //           if(uId == value['senderId'])
+  //             {
+  //               lastMessages.add('You: '+ value['message'].toString());
+  //               dateTime.add(value['dateTime'].toString());
+  //             }
+  //           else {
+  //         lastMessages.add(value['message'].toString());
+  //         dateTime.add(value['dateTime'].toString());
+  //       }
+  //     });
+  //   });
+  // }
 }
 

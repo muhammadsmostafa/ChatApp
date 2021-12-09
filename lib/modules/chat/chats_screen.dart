@@ -65,7 +65,7 @@ class ChatsScreen extends StatelessWidget {
                   child: ListView.separated(
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index], AppCubit.get(context).lastMessages[index], AppCubit.get(context).dateTime[index]),
+                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index],),
                       separatorBuilder: (context, index) => myDivider(),
                       itemCount: chatUsers.length
                   ),
@@ -74,7 +74,7 @@ class ChatsScreen extends StatelessWidget {
             ),
           ),
           fallback: (context)  {
-            Future.delayed(Duration(milliseconds: 1500)).then((value){
+            Future.delayed(Duration(milliseconds: 700)).then((value){
               AppCubit.get(context).changeBottomNav(4);
               if(chatUsers.isEmpty)
                 AppCubit.get(context).empty=true;
@@ -103,7 +103,7 @@ class ChatsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildChatItem(context, UserModel model, String message, String dateTime) => Padding(
+  Widget buildChatItem(context, UserModel model,) => Padding(
     padding: const EdgeInsets.all(20.0),
     child: Row(
         children:
@@ -136,35 +136,18 @@ class ChatsScreen extends StatelessWidget {
                   ChatDetailsScreen(userModel: model),
                 );
               },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${model.name}',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  Row(
-                    children: [
-                      Text(
-                        '${message}',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Spacer(),
-                      Text(
-                        '${dateTime}',
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ],
+              child: Container(
+                height: 60,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${model.name}',
+                      style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
