@@ -41,6 +41,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('users')
         .doc(uId)
         .collection('chats')
+        .orderBy('dateTime', descending: true)
         .get()
         .then((value){
       for(var element in value.docs)
@@ -388,6 +389,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('users')
         .doc(uId)
         .collection('following')
+        .orderBy('dateTime', descending: true)
         .get()
         .then((value){
        for(var element in value.docs)
@@ -403,8 +405,6 @@ class AppCubit extends Cubit<AppStates> {
          }
        emit(AppGetFollowingSuccessState());
        getFollowingFinished = true;
-    }).catchError((error){
-      emit(AppGetChatsErrorState());
     });
   }
 
