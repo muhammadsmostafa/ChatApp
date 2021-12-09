@@ -446,13 +446,7 @@ class AppCubit extends Cubit<AppStates> {
         .orderBy('dateTime' , descending: true)
         .get()
         .then((value){
-      FirebaseFirestore.instance.collection('users')
-          .doc(uId)
-          .collection('chats')
-          .doc(hisUID)
-          .collection('messages')
-          .doc(value.docs.first.id)
-          .get()
+          value.docs.first.reference.get()
           .then((value){
             if(uId == value['senderId'])
               {
