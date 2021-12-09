@@ -438,6 +438,7 @@ class AppCubit extends Cubit<AppStates> {
   })
   {
     lastMessages=[];
+    dateTime=[];
     FirebaseFirestore.instance.collection('users')
         .doc(uId)
         .collection('chats')
