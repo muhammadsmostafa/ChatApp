@@ -379,7 +379,6 @@ class AppCubit extends Cubit<AppStates> {
   List<String> followingId = [];
   bool getFollowingFinished = true;
   void getFollowing() {
-    emit(AppGetFollowingLoadingState());
     getFollowingFinished = false;
     following = [];
     followingId=[];
@@ -392,13 +391,13 @@ class AppCubit extends Cubit<AppStates> {
         .then((value){
        for(var element in value.docs)
          {
+           followingId.add(element.id);
            FirebaseFirestore.instance
                .collection('users')
                .doc(element.id)
                .get()
                .then((value){
                  following.add(UserModel.fromJson((value.data())));
-                 followingId.add(element.id);
            });
          }
        getFollowingFinished = true;
