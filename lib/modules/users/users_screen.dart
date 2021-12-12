@@ -63,11 +63,20 @@ class UsersScreen extends StatelessWidget {
                 UserProfileScreen(model),
               );
             },
-            child: CircleAvatar(
-              radius: 25,
-              backgroundImage: NetworkImage(
-                '${model.image}',
-              ),
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundImage: NetworkImage(
+                    '${model.image}',
+                  ),
+                ),
+                CircleAvatar(
+                  radius: 7,
+                  backgroundColor: Colors.green,
+                )
+              ],
             ),
           ),
           const SizedBox(

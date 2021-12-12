@@ -1,4 +1,6 @@
 import 'package:bloc/bloc.dart';
+import 'package:chat_app/shared/components/components.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:chat_app/layout/cubit/cubit.dart';
 import 'package:chat_app/layout/cubit/states.dart';
 import 'package:chat_app/shared/bloc_observer.dart';
@@ -15,11 +17,25 @@ import 'modules/login/login_screen.dart';
 
 void main() async
 {
+  Future <void> firebaseMessageingBackgroundHandler (RemoteMessage message) async
+  {
+    showToast(message: 'message on background');
+  }
+
   WidgetsFlutterBinding
       .ensureInitialized(); //to be sure that every thing on the method done and then open the app
 
   await Firebase.initializeApp();
   await DioHelper.init();
+  FirebaseMessaging.onMessage.listen((event) {
+    showToast(message: 'you have new message');
+  });
+
+  FirebaseMessaging.onMessageOpenedApp.listen((event) {
+    showToast(message: 'you have new message');
+  });
+
+  FirebaseMessaging.onBackgroundMessage(firebaseMessageingBackgroundHandler);
 
   Bloc.observer = MyBlocObserver();
   await CasheHelper.init();

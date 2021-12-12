@@ -178,11 +178,20 @@ class ChatsScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: 30,
-            backgroundImage: NetworkImage(
-              '${followingUserModel.image}',
-            ),
+          Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              CircleAvatar(
+                radius: 30,
+                backgroundImage: NetworkImage(
+                  '${followingUserModel.image}',
+                ),
+              ),
+              CircleAvatar(
+                radius: 7,
+                backgroundColor: Colors.green,
+              )
+            ],
           ),
           SizedBox(height: 10,),
           Text(
