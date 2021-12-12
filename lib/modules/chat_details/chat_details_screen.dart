@@ -68,6 +68,7 @@ class ChatDetailsScreen extends StatelessWidget
                       children: [
                         Expanded(
                           child: ListView.separated(
+                              reverse: true,
                               physics: const BouncingScrollPhysics(),
                               itemBuilder: (context, index)
                               {

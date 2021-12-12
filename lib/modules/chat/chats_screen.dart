@@ -51,7 +51,7 @@ class ChatsScreen extends StatelessWidget {
                         child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
-                            itemBuilder: (context, index) => buildFollowingItem(context, AppCubit.get(context).following[index]),
+                            itemBuilder: (context, index) => buildFollowingItem(context, AppCubit.get(context).following[index],),
                             separatorBuilder: (context, index) => SizedBox(width: 10,),
                             itemCount: AppCubit.get(context).following.length,
                         ),
@@ -65,7 +65,7 @@ class ChatsScreen extends StatelessWidget {
                   child: ListView.separated(
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index],),
+                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index],AppCubit.get(context).lastMessage[index], AppCubit.get(context).dateTime[index], ),
                       separatorBuilder: (context, index) => myDivider(),
                       itemCount: chatUsers.length
                   ),
@@ -103,7 +103,7 @@ class ChatsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildChatItem(context, UserModel model,) => Padding(
+  Widget buildChatItem(context, UserModel model, String message, String dateTime) => Padding(
     padding: const EdgeInsets.all(20.0),
     child: Row(
         children:
@@ -139,12 +139,29 @@ class ChatsScreen extends StatelessWidget {
               child: Container(
                 height: 60,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       '${model.name}',
                       style: Theme.of(context).textTheme.bodyText1,
+                    ),
+                    Spacer(),
+                    Row(
+                      children: [
+                        Text(
+                          '${message}',
+                          style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Spacer(),
+                        Text(
+                          '${dateTime}',
+                          style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -155,7 +172,7 @@ class ChatsScreen extends StatelessWidget {
     ),
   );
   
-  Widget buildFollowingItem(context, UserModel followingUserModel) => Container(
+  Widget buildFollowingItem(context, UserModel followingUserModel,) => Container(
     width: 70,
     child: InkWell(
       onTap: ()

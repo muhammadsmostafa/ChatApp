@@ -37,6 +37,8 @@ class AppCubit extends Cubit<AppStates> {
     emit(AppGetChatsLoadingState());
     getChatsFinished=false;
     chatUsers=[];
+    lastMessage=[];
+    dateTime=[];
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -46,12 +48,13 @@ class AppCubit extends Cubit<AppStates> {
         .then((value){
       for(var element in value.docs)
       {
+        getLastMessage(hisUID: element.id);
         FirebaseFirestore.instance
             .collection('users')
             .doc(element.id)
-            .get()
-            .then((value){
-          chatUsers.add(UserModel.fromJson((value.data())));
+            .snapshots()
+            .listen((value){
+            chatUsers.add(UserModel.fromJson((value.data())));
         });
       }
       emit(AppGetChatsSuccessState());
@@ -288,7 +291,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('chats')
         .doc(receiverId)
         .collection('messages')
-        .orderBy('dateTime')
+        .orderBy('dateTime', descending: true)
         .snapshots()
         .listen((event) {
       messages = [];
@@ -395,9 +398,9 @@ class AppCubit extends Cubit<AppStates> {
            FirebaseFirestore.instance
                .collection('users')
                .doc(element.id)
-               .get()
-               .then((value){
-                 following.add(UserModel.fromJson((value.data())));
+               .snapshots()
+               .listen((value){
+                following.add(UserModel.fromJson((value.data())));
            });
          }
        getFollowingFinished = true;
@@ -427,35 +430,33 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  // List<String> lastMessages = [];
-  // List<String> dateTime = [];
-  // void getLastMessage({
-  //   required String hisUID,
-  // })
-  // {
-  //   lastMessages=[];
-  //   dateTime=[];
-  //   FirebaseFirestore.instance.collection('users')
-  //       .doc(uId)
-  //       .collection('chats')
-  //       .doc(hisUID)
-  //       .collection('messages')
-  //       .orderBy('dateTime' , descending: true)
-  //       .get()
-  //       .then((value){
-  //         value.docs.first.reference.get()
-  //         .then((value){
-  //           if(uId == value['senderId'])
-  //             {
-  //               lastMessages.add('You: '+ value['message'].toString());
-  //               dateTime.add(value['dateTime'].toString());
-  //             }
-  //           else {
-  //         lastMessages.add(value['message'].toString());
-  //         dateTime.add(value['dateTime'].toString());
-  //       }
-  //     });
-  //   });
-  // }
+  List<String> lastMessage = [];
+  List<String> dateTime = [];
+  void getLastMessage({
+    required String hisUID,
+  })
+  {
+        FirebaseFirestore.instance.collection('users')
+        .doc(uId)
+        .collection('chats')
+        .doc(hisUID)
+        .collection('messages')
+        .orderBy('dateTime' , descending: true)
+        .snapshots()
+        .listen((value){
+          value.docs.first.reference.snapshots()
+          .listen((value){
+            if(uId == value['senderId'])
+              {
+                lastMessage.add('You: '+ value['message'].toString());
+                dateTime.add(value['dateTime'].toString());
+              }
+            else {
+          lastMessage.add(value['message'].toString());
+          dateTime.add(value['dateTime'].toString());
+        }
+      });
+    });
+  }
 }
 
