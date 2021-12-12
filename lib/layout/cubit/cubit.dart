@@ -33,8 +33,10 @@ class AppCubit extends Cubit<AppStates> {
 
 
   List<UserModel> chatUsers =[];
+  bool getChatsFinished = true;
   Future <void> getChats() async {
     emit(AppGetChatsLoadingState());
+    getChatsFinished = false;
     chatUsers=[];
     lastMessage=[];
     dateTime=[];
@@ -57,6 +59,7 @@ class AppCubit extends Cubit<AppStates> {
         });
       }
       emit(AppGetChatsSuccessState());
+      getChatsFinished = true;
     });
   }
 
@@ -93,9 +96,12 @@ class AppCubit extends Cubit<AppStates> {
     {
       if (index == 0)
         {
+          if(getChatsFinished && getFollowingFinished)
+          {
           getChats();
           getFollowing();
-        }
+          }
+      }
       currentIndex = index;
       emit(AppChangeBottomNavBarState());
     }
