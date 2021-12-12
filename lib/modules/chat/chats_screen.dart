@@ -85,14 +85,6 @@ class ChatsScreen extends StatelessWidget {
                   children: [
                     if(!FirebaseAuth.instance.currentUser!.emailVerified)
                       emailNotVerifyed(context: context),
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                            'No Messages Yet',
-                          style: Theme.of(context).textTheme.subtitle1,
-                        ),
-                      ),
-                    ),
                   ],
                 )
                 :
@@ -156,7 +148,8 @@ class ChatsScreen extends StatelessWidget {
                         ),
                         Spacer(),
                         Text(
-                          '${dateTime}',
+                          '',
+                          // '${dateTime}',
                           style: Theme.of(context).textTheme.subtitle1!.copyWith(
                             color: Colors.grey,
                           ),

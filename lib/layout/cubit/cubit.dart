@@ -91,6 +91,11 @@ class AppCubit extends Cubit<AppStates> {
       }
     else
     {
+      if (index == 0)
+        {
+          getChats();
+          getFollowing();
+        }
       currentIndex = index;
       emit(AppChangeBottomNavBarState());
     }
