@@ -1,1 +1,3 @@
 dynamic uId = '';
+
+var myToken = '';

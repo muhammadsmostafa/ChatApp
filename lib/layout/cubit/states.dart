@@ -70,6 +70,8 @@ class AppGetMessagesSuccessState extends AppStates {}
 
 class AppSendImageMessagesSuccessState extends AppStates {}
 
+class SendMessageSuccessState extends AppStates {}
+
 class AppSendMessageLoadingState extends AppStates {}
 
 class AppMessageImagePickedSuccessState extends AppStates {}

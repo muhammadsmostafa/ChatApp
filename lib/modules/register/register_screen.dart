@@ -6,10 +6,11 @@ import 'package:chat_app/shared/components/components.dart';
 import 'package:chat_app/shared/components/constants.dart';
 import 'package:chat_app/shared/network/local/cashe_helper.dart';
 import 'package:chat_app/shared/styles/icon_broken.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'cubit/cubit.dart';
 import 'cubit/states.dart';
 
@@ -36,7 +37,9 @@ class RegisterScreen extends StatelessWidget {
               CasheHelper.saveData(
                 key: 'uId',
                 value: FirebaseAuth.instance.currentUser!.uid,
-              ).then((value){
+              ).then((value) async {
+                myToken = (await FirebaseMessaging.instance.getToken())!;
+                FirebaseFirestore.instance.collection('users').doc(uId).update({'token': myToken});
                 AppCubit.get(context).getUserData();
                 navigateAndFinish(context, ImageBioScreen(name: nameController.text,phone: phoneController.text,));
               });

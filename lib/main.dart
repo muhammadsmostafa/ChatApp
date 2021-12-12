@@ -4,6 +4,7 @@ import 'package:chat_app/layout/cubit/states.dart';
 import 'package:chat_app/shared/bloc_observer.dart';
 import 'package:chat_app/shared/components/constants.dart';
 import 'package:chat_app/shared/network/local/cashe_helper.dart';
+import 'package:chat_app/shared/network/remote/dio_helper.dart';
 import 'package:chat_app/shared/styles/themes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ void main() async
       .ensureInitialized(); //to be sure that every thing on the method done and then open the app
 
   await Firebase.initializeApp();
+  await DioHelper.init();
 
   Bloc.observer = MyBlocObserver();
   await CasheHelper.init();

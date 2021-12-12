@@ -41,6 +41,7 @@ dependencies:
   fluttertoast: ^8.0.8
   image_picker: ^0.8.4+4
   intl: ^0.17.0
+  dio: ^4.0.4
 
   #firbase
   firebase_core: ^1.10.0

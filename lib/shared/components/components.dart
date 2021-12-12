@@ -147,7 +147,7 @@ Widget emailNotVerifyed({
           onPressed: ()
           {
             FirebaseAuth.instance.currentUser!.sendEmailVerification().then((value){
-              AppCubit.get(context).changeBottomNav(0);
+              AppCubit.get(context).changeBottomNav(1);
               navigateAndFinish(context, LoginScreen()).then((value){
                 AppCubit.get(context).logout();
               });

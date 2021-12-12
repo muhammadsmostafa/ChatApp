@@ -6,6 +6,7 @@ import 'package:chat_app/modules/chat/chats_screen.dart';
 import 'package:chat_app/modules/profile/profile_screen.dart';
 import 'package:chat_app/modules/users/users_screen.dart';import 'package:chat_app/shared/components/constants.dart';
 import 'package:chat_app/shared/network/local/cashe_helper.dart';
+import 'package:chat_app/shared/network/remote/dio_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -32,10 +33,8 @@ class AppCubit extends Cubit<AppStates> {
 
 
   List<UserModel> chatUsers =[];
-  bool getChatsFinished = true;
   Future <void> getChats() async {
     emit(AppGetChatsLoadingState());
-    getChatsFinished=false;
     chatUsers=[];
     lastMessage=[];
     dateTime=[];
@@ -59,7 +58,6 @@ class AppCubit extends Cubit<AppStates> {
       }
       emit(AppGetChatsSuccessState());
     });
-    getChatsFinished=true;
   }
 
   Future<void> logout()
@@ -71,7 +69,7 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  int currentIndex = 0;
+  int currentIndex = 1;
   List<Widget> screens =
   [
     ChatsScreen(),
@@ -92,23 +90,10 @@ class AppCubit extends Cubit<AppStates> {
         emit(AppShowSuccess());
       }
     else
-      {
-        if(index == 0)
-        {
-          empty = false;
-          if(getChatsFinished && getFollowingFinished) {
-            getChats();
-            getFollowing();
-          }
-        }
-        if (index == 1) {
-          if(getAllUserFinished) {
-            getAllUsers();
-          }
-        }
-        currentIndex = index;
-        emit(AppChangeBottomNavBarState());
-      }
+    {
+      currentIndex = index;
+      emit(AppChangeBottomNavBarState());
+    }
   }
 
   File? profileImage;
@@ -193,10 +178,8 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   List<UserModel> users = [];
-  bool getAllUserFinished = true;
   Future<dynamic> getAllUsers() async {
     users = [];
-    getAllUserFinished=false;
     FirebaseFirestore.instance
         .collection('users')
         .get()
@@ -208,7 +191,6 @@ class AppCubit extends Cubit<AppStates> {
         users.shuffle();
       }
       emit(AppGetAllUsersSuccessState());
-      getAllUserFinished=true;
     }).catchError((error) {
       emit(AppGetAllUsersErrorState(error.toString()));
     });
@@ -238,12 +220,16 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  void sendMessage({
+  late String token;
+  Future<void> sendMessage({
     required String? receiverId,
     required String dateTime,
     required String message,
     String? image,
-  }) {
+  }) async {
+     await FirebaseFirestore.instance.collection('users').doc(receiverId).get().then((value){
+      token =value['token'];
+    });
     MessageModel model = MessageModel(
       message: message,
       senderId: userModel!.uId,
@@ -275,10 +261,11 @@ class AppCubit extends Cubit<AppStates> {
         .add(model.toMap())
         .then((value) {
       emit(AppSendMessageSuccessState());
-    }).catchError((error) {
+      }).catchError((error) {
       emit(AppSendMessageErrorState());
-    });
+      });
     setupChats(receiverId: receiverId);
+    sendFCMNotification(token: token, senderName: userModel!.name, messageText: message);
   }
 
   List<MessageModel> messages = [];
@@ -326,6 +313,9 @@ class AppCubit extends Cubit<AppStates> {
     required String message,
   }) {
     emit(AppSendMessageLoadingState());
+    FirebaseFirestore.instance.collection('users').doc(receiverId).get().then((value){
+      token =value['token'];
+    });
     firebase_storage.FirebaseStorage.instance
         .ref()
         .child('messageImage/${Uri.file(messageImage!.path).pathSegments.last}')
@@ -340,6 +330,7 @@ class AppCubit extends Cubit<AppStates> {
           message: message,
           image: value,
         );
+        sendFCMNotification(token: token, senderName: userModel!.name, messageImage: value);
       }).catchError((error) {
         emit(AppSendMessageErrorState());
       });
@@ -458,5 +449,32 @@ class AppCubit extends Cubit<AppStates> {
       });
     });
   }
+
+  void sendFCMNotification({
+    required String? token,
+    required String? senderName,
+    String? messageText,
+    String? messageImage,
+  }) {
+    DioHelper.postData(
+        data: {
+          "to": "$token",
+          "notification": {
+            "title": "$senderName",
+            "body":
+            "${messageText != null ? messageText : messageImage != null ? 'Photo' : 'ERROR 404'}",
+            "sound": "default"
+          },
+          "android": {
+            "Priority": "HIGH",
+          },
+          "data": {
+            "type": "order",
+            "id": "87",
+            "click_action": "FLUTTER_NOTIFICATION_CLICK"
+          }
+        });
+  }
+
 }
 
