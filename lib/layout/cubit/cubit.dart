@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:intl/intl.dart';
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppInitialState());
@@ -69,11 +68,18 @@ class AppCubit extends Cubit<AppStates> {
     emit(AppLogoutLoadingState());
     FirebaseAuth.instance.signOut()
     .then((value){
-      FirebaseFirestore.instance
-      .collection('users')
-      .doc(uId)
-      .update({'token' : ''});
       emit(AppLogoutSuccessState());
+    });
+  }
+
+  Future<void> removeTokenAndUid()
+  async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId)
+        .update({'token' : ''}).then((value){
+      CasheHelper.saveData(key: 'uId', value: '');
+      uId='';
     });
   }
 

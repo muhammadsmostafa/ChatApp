@@ -1,6 +1,5 @@
 import 'package:chat_app/layout/cubit/cubit.dart';
 import 'package:chat_app/layout/cubit/states.dart';
-import 'package:chat_app/modules/profile/profile_screen.dart';
 import 'package:chat_app/shared/components/components.dart';
 import 'package:chat_app/shared/styles/icon_broken.dart';
 import 'package:flutter/material.dart';
@@ -141,7 +140,7 @@ class EditProfileScreen extends StatelessWidget
                         return null;
                       },
                       label: 'Bio',
-                      prefix: IconBroken.Info_Circle,
+                      prefix: IconBroken.Edit,
                     ),
                     const SizedBox(
                       height: 10,

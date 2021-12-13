@@ -8,7 +8,6 @@ import 'package:chat_app/shared/network/local/cashe_helper.dart';
 import 'package:chat_app/shared/styles/icon_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'cubit/cubit.dart';
@@ -30,7 +29,7 @@ class RegisterScreen extends StatelessWidget {
         BlocProvider(create: (BuildContext context) => LoginCubit(),),
       ],
       child: BlocConsumer<RegisterCubit,RegisterStates>(
-        listener: (context,state) {
+        listener: (context,state) async {
           if(RegisterCubit.get(context).isSuccessRegister)
             {
               uId=FirebaseAuth.instance.currentUser!.uid;
@@ -38,7 +37,6 @@ class RegisterScreen extends StatelessWidget {
                 key: 'uId',
                 value: FirebaseAuth.instance.currentUser!.uid,
               ).then((value) async {
-                myToken = (await FirebaseMessaging.instance.getToken())!;
                 FirebaseFirestore.instance.collection('users').doc(uId).update({'token': myToken});
                 AppCubit.get(context).getUserData();
                 navigateAndFinish(context, ImageBioScreen(name: nameController.text,phone: phoneController.text,));

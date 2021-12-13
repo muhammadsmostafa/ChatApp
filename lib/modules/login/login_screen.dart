@@ -8,7 +8,6 @@ import 'package:chat_app/shared/network/local/cashe_helper.dart';
 import 'package:chat_app/shared/styles/icon_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'cubit/cubit.dart';
 import 'cubit/states.dart';
 
@@ -51,6 +50,7 @@ class LoginScreen extends StatelessWidget {
                 context,
                 const AppLayout(),
               );
+              LoginCubit.get(context).updateToken();
             });
           }
         },

@@ -1,3 +1,3 @@
 dynamic uId = '';
 
-var myToken = '';
+late String myToken;

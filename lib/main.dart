@@ -27,7 +27,9 @@ void main() async
 
   await Firebase.initializeApp();
   await DioHelper.init();
+
   myToken = (await FirebaseMessaging.instance.getToken())!;
+  print(myToken);
   FirebaseMessaging.onMessage.listen((event) {
     showToast(message: 'you have new message');
   });

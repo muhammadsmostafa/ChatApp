@@ -4,8 +4,6 @@ import 'package:chat_app/modules/edit_profile/edit_profile_screen.dart';
 import 'package:chat_app/modules/image_viewer/image_viewer_screen.dart';
 import 'package:chat_app/modules/login/login_screen.dart';
 import 'package:chat_app/shared/components/components.dart';
-import 'package:chat_app/shared/components/constants.dart';
-import 'package:chat_app/shared/network/local/cashe_helper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -77,13 +75,10 @@ class ProfileScreen extends StatelessWidget {
               child: defaultButton(
                 background: Colors.red,
                   function: (){
+                    AppCubit.get(context).removeTokenAndUid();
                     AppCubit.get(context).changeBottomNav(1);
                       navigateAndFinish(context, LoginScreen()).then((value){
-                        AppCubit.get(context).logout()
-                            .then((value){
-                          CasheHelper.saveData(key: 'uId', value: '');
-                          uId='';
-                      });
+                        AppCubit.get(context).logout();
                     });
                   },
                   text: 'logout'),
