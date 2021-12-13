@@ -23,7 +23,6 @@ class LoginCubit extends Cubit<LoginStates> {
         email: email,
         password: password
     ).then((value) async {
-      myToken = (await FirebaseMessaging.instance.getToken())!;
       emit(LoginSuccessState(value.user!.uid));
       FirebaseFirestore.instance
       .collection('users')

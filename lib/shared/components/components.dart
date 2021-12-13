@@ -1,5 +1,7 @@
 import 'package:chat_app/layout/cubit/cubit.dart';
 import 'package:chat_app/modules/login/login_screen.dart';
+import 'package:chat_app/shared/components/constants.dart';
+import 'package:chat_app/shared/network/local/cashe_helper.dart';
 import 'package:chat_app/shared/styles/icon_broken.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -149,7 +151,10 @@ Widget emailNotVerifyed({
             FirebaseAuth.instance.currentUser!.sendEmailVerification().then((value){
               AppCubit.get(context).changeBottomNav(1);
               navigateAndFinish(context, LoginScreen()).then((value){
-                AppCubit.get(context).logout();
+                AppCubit.get(context).logout().then((value){
+                  CasheHelper.saveData(key: 'uId', value: '');
+                  uId='';
+                });
               });
               showToast(message: 'Verify your mail and login again');
             });

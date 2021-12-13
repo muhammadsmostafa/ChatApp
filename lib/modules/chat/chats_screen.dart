@@ -187,9 +187,18 @@ class ChatsScreen extends StatelessWidget {
                   '${followingUserModel.image}',
                 ),
               ),
-              CircleAvatar(
-                radius: 7,
-                backgroundColor: Colors.green,
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 9,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  ),
+                  CircleAvatar(
+                    radius: 7,
+                    backgroundColor: Colors.green,
+                  ),
+                ],
               )
             ],
           ),

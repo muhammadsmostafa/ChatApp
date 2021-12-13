@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:intl/intl.dart';
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppInitialState());
@@ -68,6 +69,10 @@ class AppCubit extends Cubit<AppStates> {
     emit(AppLogoutLoadingState());
     FirebaseAuth.instance.signOut()
     .then((value){
+      FirebaseFirestore.instance
+      .collection('users')
+      .doc(uId)
+      .update({'token' : ''});
       emit(AppLogoutSuccessState());
     });
   }
@@ -461,6 +466,31 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+  void setLastSeen({
+  required hisUID
+})
+  {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(hisUID)
+        .update({'lastSeen': DateTime.now()});
+  }
+
+  // List<String> lastSeen = [];
+  // Future <void> getLastSeen({
+  //   required hisUID
+  // }) async
+  // {
+  //   FirebaseFirestore.instance
+  //   .collection('users')
+  //   .doc(hisUID)
+  //   .snapshots()
+  //   .listen((value)
+  //   {
+  //
+  //   });
+  // }
+
   void sendFCMNotification({
     required String? token,
     required String? senderName,
@@ -486,6 +516,5 @@ class AppCubit extends Cubit<AppStates> {
           }
         });
   }
-
 }
 
