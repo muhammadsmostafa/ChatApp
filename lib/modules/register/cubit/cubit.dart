@@ -52,8 +52,8 @@ class RegisterCubit extends Cubit<RegisterStates> {
       password: password,
       phone: phone,
       uId: uId,
-      image: 'https://meetanentrepreneur.lu/wp-content/uploads/2019/08/profil-linkedin.jpg',
-      bio: '',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQP-i5liksKo3g85Qz90jpYieJ4J_YGy5S7JQ&usqp=CAU',
+      bio: 'No Bio Yet',
     );
 
     FirebaseFirestore.instance
