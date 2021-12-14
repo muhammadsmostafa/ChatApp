@@ -191,7 +191,7 @@ class ChatDetailsScreen extends StatelessWidget
                   fallback: (context) => Center(
                     child: Column(
                       children: const [
-                        Text('No messages yes'),
+                        Text('No messages yet'),
                         Center(child: CircularProgressIndicator()),
                       ],
                     ),

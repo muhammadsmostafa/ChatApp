@@ -12,7 +12,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UsersScreen extends StatelessWidget {
 
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit,AppStates>(
