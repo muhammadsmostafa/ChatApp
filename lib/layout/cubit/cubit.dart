@@ -47,7 +47,6 @@ class AppCubit extends Cubit<AppStates> {
         .orderBy('dateTime', descending: true)
         .get()
         .then((value){
-      setLastSeen(hisUID: uId);
       for(var element in value.docs)
       {
         getLastMessage(hisUID: element.id);

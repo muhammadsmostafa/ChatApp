@@ -5,7 +5,6 @@ import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/modules/chat_details/chat_details_screen.dart';
 import 'package:chat_app/modules/user_profile/user_profile_screen.dart';
 import 'package:chat_app/shared/components/components.dart';
-import 'package:chat_app/shared/components/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,7 +23,6 @@ class UsersScreen extends StatelessWidget {
           builder: (context) => RefreshIndicator(
             onRefresh: () async {
               await AppCubit.get(context).getAllUsers();
-              AppCubit.get(context).setLastSeen(hisUID: uId);
             },
             child: Column(
               children: [
