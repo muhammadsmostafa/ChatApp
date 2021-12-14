@@ -26,12 +26,6 @@ class LoginScreen extends StatelessWidget {
       child: BlocConsumer<LoginCubit, LoginStates>(
         listener: (context, state)
         {
-          if(state is LoginErrorState)
-          {
-            showToast(
-                message: 'Login Error',
-            );
-          }
           if(state is LoginSuccessState)
           {
             uId=state.uId;

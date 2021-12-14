@@ -85,7 +85,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ],
         )
-            :
+        :
         const Center(child: CircularProgressIndicator());
       },
     );

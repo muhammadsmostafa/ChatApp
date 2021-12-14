@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel
 {
   String? name;
@@ -7,6 +9,7 @@ class UserModel
   String? uId;
   String? image;
   String? bio;
+  Timestamp? lastSeen;
 
   UserModel({
     required this.name,
@@ -16,6 +19,7 @@ class UserModel
     required this.uId,
     required this.image,
     required this.bio,
+    required this.lastSeen,
   });
 
   UserModel.fromJson(Map <String, dynamic>? json)
@@ -27,6 +31,7 @@ class UserModel
     uId = json['uId'];
     image = json['image'];
     bio = json['bio'];
+    lastSeen = json['lastSeen'];
   }
 
   Map <String, dynamic> toMap()
@@ -39,6 +44,7 @@ class UserModel
       'uId': uId,
       'image': image,
       'bio': bio,
+      'lastSeen': lastSeen,
     };
   }
 }

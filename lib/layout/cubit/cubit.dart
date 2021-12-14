@@ -47,6 +47,7 @@ class AppCubit extends Cubit<AppStates> {
         .orderBy('dateTime', descending: true)
         .get()
         .then((value){
+      setLastSeen(hisUID: uId);
       for(var element in value.docs)
       {
         getLastMessage(hisUID: element.id);
@@ -186,6 +187,7 @@ class AppCubit extends Cubit<AppStates> {
         uId: userModel!.uId,
         image: image ?? userModel!.image,
         bio: bio,
+        lastSeen: Timestamp.now(),
       );
       FirebaseFirestore.instance
           .collection('users')
@@ -206,6 +208,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('users')
         .get()
         .then((value) {
+      setLastSeen(hisUID: uId);
       for (var element in value.docs) {
         if (element.id != uId) {
           users.add(UserModel.fromJson(element.data()));
@@ -227,7 +230,7 @@ class AppCubit extends Cubit<AppStates> {
         .doc(uId)
         .collection('chats')
         .doc(receiverId)
-        .set({'dateTime' : DateTime.now().toString()})
+        .set({'dateTime' : Timestamp.now().toString()})
         .then((value) {
     });
 
@@ -237,7 +240,7 @@ class AppCubit extends Cubit<AppStates> {
         .doc(receiverId)
         .collection('chats')
         .doc(userModel!.uId)
-        .set({'dateTime' : DateTime.now().toString()})
+        .set({'dateTime' : Timestamp.now().toString()})
         .then((value) {
     });
   }
@@ -370,7 +373,7 @@ class AppCubit extends Cubit<AppStates> {
         .doc(uId)
         .collection('following')
         .doc(userId)
-        .set({'dateTime' : DateTime.now().toString()}).then((value){
+        .set({'dateTime' : Timestamp.now().toString()}).then((value){
           emit(AppFollowSuccessState());
           getFollowing();
     });
@@ -479,23 +482,8 @@ class AppCubit extends Cubit<AppStates> {
     FirebaseFirestore.instance
         .collection('users')
         .doc(hisUID)
-        .update({'lastSeen': DateTime.now()});
+        .update({'lastSeen': Timestamp.now()});
   }
-
-  // List<String> lastSeen = [];
-  // Future <void> getLastSeen({
-  //   required hisUID
-  // }) async
-  // {
-  //   FirebaseFirestore.instance
-  //   .collection('users')
-  //   .doc(hisUID)
-  //   .snapshots()
-  //   .listen((value)
-  //   {
-  //
-  //   });
-  // }
 
   void sendFCMNotification({
     required String? token,

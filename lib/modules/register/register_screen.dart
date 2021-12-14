@@ -192,12 +192,7 @@ class RegisterScreen extends StatelessWidget {
                                 email: emailController.text,
                                 password: passwordController.text,
                                 phone: phoneController.text,
-                              ).then((value){
-                                if(state is RegisterErrorState)
-                                  {
-                                    showToast(message: 'Check your data');
-                                  }
-                              });
+                              );
                             }
                           },
                           text: 'register',

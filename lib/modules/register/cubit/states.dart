@@ -14,10 +14,6 @@ class RegisterErrorState extends RegisterStates
 
 class CreateUserSuccessState extends RegisterStates {}
 
-class CreateUserErrorState extends RegisterStates
-{
-  late final String error;
-  CreateUserErrorState(this.error);
-}
+class CreateUserErrorState extends RegisterStates {}
 
 class RegisterChangePasswordVisibilityState extends RegisterStates{}

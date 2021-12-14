@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/modules/register/cubit/states.dart';
+import 'package:chat_app/shared/components/components.dart';
 import 'package:chat_app/shared/styles/icon_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -34,6 +35,13 @@ class RegisterCubit extends Cubit<RegisterStates> {
           uId: value.user!.uid);
     }).catchError((error){
       isSuccessRegister=false;
+      if(error.code == 'weak-password')
+      {
+        showToast(message: 'Password Weak');
+      } else if(error.code == 'email-already-in-use')
+      {
+        showToast(message: 'This Email Already Used');
+      }
       emit(RegisterErrorState(error.toString()));
     });
   }
@@ -52,8 +60,9 @@ class RegisterCubit extends Cubit<RegisterStates> {
       password: password,
       phone: phone,
       uId: uId,
-      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQP-i5liksKo3g85Qz90jpYieJ4J_YGy5S7JQ&usqp=CAU',
+      image: 'https://meetanentrepreneur.lu/wp-content/uploads/2019/08/profil-linkedin.jpg',
       bio: 'No Bio Yet',
+      lastSeen: Timestamp.now(),
     );
 
     FirebaseFirestore.instance
@@ -62,10 +71,8 @@ class RegisterCubit extends Cubit<RegisterStates> {
         .set(model.toMap()).then((value)
     {
       emit(CreateUserSuccessState());
-    })
-        .catchError((error)
-    {
-      emit(CreateUserErrorState(error.toString()));
+    }).catchError((error) {
+      emit(CreateUserErrorState());
     });
   }
 

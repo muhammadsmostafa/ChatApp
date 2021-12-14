@@ -17,11 +17,6 @@ import 'modules/login/login_screen.dart';
 
 void main() async
 {
-  Future <void> firebaseMessageingBackgroundHandler (RemoteMessage message) async
-  {
-    showToast(message: 'message on background');
-  }
-
   WidgetsFlutterBinding
       .ensureInitialized(); //to be sure that every thing on the method done and then open the app
 
@@ -29,7 +24,6 @@ void main() async
   await DioHelper.init();
 
   myToken = (await FirebaseMessaging.instance.getToken())!;
-  print(myToken);
   FirebaseMessaging.onMessage.listen((event) {
     showToast(message: 'you have new message');
   });
@@ -37,8 +31,6 @@ void main() async
   FirebaseMessaging.onMessageOpenedApp.listen((event) {
     showToast(message: 'you have new message');
   });
-
-  FirebaseMessaging.onBackgroundMessage(firebaseMessageingBackgroundHandler);
 
   Bloc.observer = MyBlocObserver();
   await CasheHelper.init();

@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:chat_app/modules/login/cubit/states.dart';
+import 'package:chat_app/shared/components/components.dart';
 import 'package:chat_app/shared/components/constants.dart';
 import 'package:chat_app/shared/styles/icon_broken.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,6 +25,13 @@ class LoginCubit extends Cubit<LoginStates> {
     ).then((value){
       emit(LoginSuccessState(value.user!.uid));
     }).catchError((error){
+      if(error.code == 'wrong-password')
+        {
+          showToast(message: 'Password Wrong');
+        } else if(error.code == 'user-not-found')
+          {
+            showToast(message: 'No User Found With This Email');
+          }
       emit(LoginErrorState());
     });
   }
