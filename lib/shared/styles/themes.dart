@@ -6,47 +6,47 @@ import 'colors.dart';
 
 ThemeData darkTheme = ThemeData(
     fontFamily: 'Jannah',
-    scaffoldBackgroundColor: HexColor('2A2438'),
+    primarySwatch : defaultColor,
+    scaffoldBackgroundColor: HexColor('333739'),
     appBarTheme: AppBarTheme(
       titleSpacing: 20,
-      titleTextStyle: TextStyle(
+      titleTextStyle: const TextStyle(
         fontFamily: 'Jannah',
-        color: HexColor('DBD8E3'),
+        color: Colors.white,
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
-      iconTheme: IconThemeData(
-        color: HexColor('5C5470'),
+      iconTheme: const IconThemeData(
+        color: Colors.white,
       ),
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarColor: HexColor('333739'),
         statusBarIconBrightness: Brightness.light,
       ),
-      backgroundColor: HexColor('2A2438'),
+      backgroundColor: HexColor('333739'),
       elevation: 0,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       type:BottomNavigationBarType.fixed,
-      selectedItemColor: HexColor('5C5470'),
-      unselectedItemColor: HexColor('352F44'),
+      selectedItemColor: defaultColor,
+      unselectedItemColor: Colors.grey,
       elevation: 20.0,
-      backgroundColor: HexColor('2A2438'),
+      backgroundColor: HexColor('333739'),
     ),
-    textTheme: TextTheme(
+    textTheme: const TextTheme(
       bodyText1: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
-        color: HexColor('DBD8E3'),
+        color: Colors.white,
       ),
       subtitle1: TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: HexColor('DBD8E3'),
+        color: Colors.white,
         height: 1.3,
       ),
     )
 );
-
 ThemeData lightTheme = ThemeData(
   fontFamily: 'Jannah',
   primarySwatch : defaultColor,
