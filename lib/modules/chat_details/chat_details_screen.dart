@@ -21,7 +21,6 @@ class ChatDetailsScreen extends StatelessWidget
   Widget build(BuildContext context) {
     return Builder(
       builder: (BuildContext context){
-        AppCubit.get(context).getSpecificUserData(UID: userModel.uId);
         AppCubit.get(context).getMessages(receiverId: userModel.uId);
         return BlocConsumer<AppCubit,AppStates>(
           listener: (context , state) {},

@@ -31,19 +31,6 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  UserModel? specificUserModel;
-  void getSpecificUserData({
-  required String? UID
-  }){
-    emit(AppGetUserLoadingState());
-    FirebaseFirestore.instance.collection('users').doc(UID).get().then((value) {
-      specificUserModel = UserModel.fromJson(value.data());
-      emit(AppGetUserSuccessState());
-    }).catchError((error) {
-      emit(AppGetUserErrorState(error.toString()));
-    });
-  }
-
   List<UserModel> chatUsers =[];
   bool getChatsFinished = true;
   Future <void> getChats() async {
