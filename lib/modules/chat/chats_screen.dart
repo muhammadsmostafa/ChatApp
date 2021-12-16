@@ -24,7 +24,6 @@ class ChatsScreen extends StatelessWidget {
           onRefresh: () async {
             await AppCubit.get(context).getChats().then((value){
               AppCubit.get(context).empty=false;
-              AppCubit.get(context).changeBottomNav(4);
               AppCubit.get(context).getFollowing();
               AppCubit.get(context).setLastSeen(hisUID: uId);
             });
@@ -67,7 +66,7 @@ class ChatsScreen extends StatelessWidget {
                   child: ListView.separated(
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index],AppCubit.get(context).lastMessage[index], ),
+                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index],AppCubit.get(context).lastMessage[index],),
                       separatorBuilder: (context, index) => myDivider(),
                       itemCount: chatUsers.length
                   ),
@@ -167,13 +166,6 @@ class ChatsScreen extends StatelessWidget {
                       children: [
                         Text(
                           '${message}',
-                          style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Spacer(),
-                        Text(
-                          '',
                           style: Theme.of(context).textTheme.subtitle1!.copyWith(
                             color: Colors.grey,
                           ),

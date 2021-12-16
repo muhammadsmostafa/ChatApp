@@ -38,7 +38,6 @@ class AppCubit extends Cubit<AppStates> {
     getChatsFinished = false;
     chatUsers=[];
     lastMessage=[];
-    dateTime=[];
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
@@ -55,7 +54,7 @@ class AppCubit extends Cubit<AppStates> {
             .snapshots()
             .listen((value){
             chatUsers.add(UserModel.fromJson((value.data())));
-        });
+            });
       }
       emit(AppGetChatsSuccessState());
       getChatsFinished = true;
@@ -407,7 +406,6 @@ class AppCubit extends Cubit<AppStates> {
         .doc(userId)
         .set({'dateTime' : Timestamp.now().toString()}).then((value){
           emit(AppFollowSuccessState());
-          getFollowing();
     });
   }
 
@@ -422,14 +420,15 @@ class AppCubit extends Cubit<AppStates> {
         .doc(userId)
         .delete().then((value){
       emit(AppUnfollowSuccessState());
-      getFollowing();
     });
   }
 
   List<UserModel> following = [];
   List<String> followingId = [];
   bool getFollowingFinished = true;
+  bool followSuccess = false;
   void getFollowing() {
+    emit(AppGetFollowingLoadingState());
     getFollowingFinished = false;
     following = [];
     followingId=[];
@@ -451,7 +450,10 @@ class AppCubit extends Cubit<AppStates> {
                 following.add(UserModel.fromJson((value.data())));
            });
          }
-       getFollowingFinished = true;
+    }).then((value){
+      emit(AppGetFollowingSuccessState());
+      getFollowingFinished = true;
+      followSuccess = true;
     });
   }
 
@@ -479,7 +481,6 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   List<String> lastMessage = [];
-  List<Timestamp> dateTime = [];
   void getLastMessage({
     required String hisUID,
   })
@@ -497,11 +498,9 @@ class AppCubit extends Cubit<AppStates> {
             if(uId == value['senderId'])
               {
                 lastMessage.add('You: '+ value['message'].toString());
-                dateTime.add(value['dateTime']);
               }
             else {
           lastMessage.add(value['message'].toString());
-          dateTime.add(value['dateTime']);
         }
       });
     });
@@ -554,6 +553,40 @@ class AppCubit extends Cubit<AppStates> {
           return 'last seen ${difference.inDays} days ago';
         }
       }
+    return 'last seen along time ago';
+  }
+
+  String formatLastMessageDate({
+    required Timestamp? lastMessageDate,
+  })
+  {
+    var now = Timestamp.now().toDate();
+    var difference = now.difference(lastSeen.toDate());
+    if (difference.inHours < 24)
+    {
+      if(difference.inMinutes < 60)
+      {
+        return 'from ${difference.inMinutes}';
+      }
+      else if (difference.inMinutes < 60)
+      {
+        return 'Active ${difference.inMinutes} minutes ago';
+      } else
+      {
+        return 'Active ${difference.inHours} hours ago';
+      }
+    }
+    else if (difference.inDays <= 30)
+    {
+      if(difference.inDays < 2)
+      {
+        return 'last seen yesterday';
+      }
+      else
+      {
+        return 'last seen ${difference.inDays} days ago';
+      }
+    }
     return 'last seen along time ago';
   }
 

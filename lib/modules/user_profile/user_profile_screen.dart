@@ -21,7 +21,7 @@ class UserProfileScreen extends StatelessWidget {
         return WillPopScope(
           onWillPop: ()
           async {
-            AppCubit.get(context).changeBottomNav(4);
+            AppCubit.get(context).getFollowing();
             return true;
           },
           child: Scaffold(
@@ -29,7 +29,7 @@ class UserProfileScreen extends StatelessWidget {
                 leading: IconButton(
                   onPressed: ()
                   {
-                    AppCubit.get(context).changeBottomNav(4);
+                    AppCubit.get(context).getFollowing();
                     Navigator.pop(context);
                   },
                   icon: const Icon(
