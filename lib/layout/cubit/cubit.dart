@@ -19,8 +19,8 @@ class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(AppInitialState());
 
   static AppCubit get(context) => BlocProvider.of(context);
-  UserModel? userModel;
 
+  UserModel? userModel;
   void getUserData() {
     emit(AppGetUserLoadingState());
     FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
@@ -31,6 +31,18 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
+  UserModel? specificUserModel;
+  void getSpecificUserData({
+  required String? UID
+  }){
+    emit(AppGetUserLoadingState());
+    FirebaseFirestore.instance.collection('users').doc(UID).get().then((value) {
+      specificUserModel = UserModel.fromJson(value.data());
+      emit(AppGetUserSuccessState());
+    }).catchError((error) {
+      emit(AppGetUserErrorState(error.toString()));
+    });
+  }
 
   List<UserModel> chatUsers =[];
   bool getChatsFinished = true;
@@ -234,7 +246,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('users')
         .get()
         .then((value) {
-      setLastSeen(hisUID: uId);
+        setLastSeen(hisUID: uId);
       if (counter <= 20)
      {
         for (var element in value.docs) {
@@ -524,7 +536,7 @@ class AppCubit extends Cubit<AppStates> {
       }
   }
 
-  String getLastSeen({
+  String formatLastSeen({
     required Timestamp? lastSeen,
   })
   {
@@ -532,20 +544,19 @@ class AppCubit extends Cubit<AppStates> {
     var difference = now.difference(lastSeen!.toDate());
     if (difference.inHours < 24)
       {
-        if(difference.inMinutes <= 1)
+        if(difference.inMinutes < 1)
           {
             return 'Active now';
           }
-        else if (difference.inMinutes <= 60)
+        else if (difference.inMinutes < 60)
           {
             return 'Active ${difference.inMinutes} minutes ago';
-          }
-        else
+          } else
           {
             return 'Active ${difference.inHours} hours ago';
           }
       }
-    else if (difference.inDays <= 30)
+      else if (difference.inDays <= 30)
       {
         if(difference.inDays < 2)
         {
@@ -557,6 +568,22 @@ class AppCubit extends Cubit<AppStates> {
         }
       }
     return 'last seen along time ago';
+  }
+
+  late Timestamp lastSeen;
+  Timestamp getLastSeen({
+  required String? UID
+  })
+  {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(UID)
+        .get()
+        .then((value){
+          lastSeen =value['lastSeen'];
+          return lastSeen;
+    });
+    return lastSeen;
   }
 
   void setLastSeen({

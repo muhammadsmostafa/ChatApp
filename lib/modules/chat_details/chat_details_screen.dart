@@ -21,6 +21,7 @@ class ChatDetailsScreen extends StatelessWidget
   Widget build(BuildContext context) {
     return Builder(
       builder: (BuildContext context){
+        AppCubit.get(context).getSpecificUserData(UID: userModel.uId);
         AppCubit.get(context).getMessages(receiverId: userModel.uId);
         return BlocConsumer<AppCubit,AppStates>(
           listener: (context , state) {},
@@ -59,7 +60,7 @@ class ChatDetailsScreen extends StatelessWidget
                           children: [
                             Text('${userModel.name}'),
                             Text(
-                              AppCubit.get(context).getLastSeen(lastSeen: userModel.lastSeen),
+                              AppCubit.get(context).formatLastSeen(lastSeen: userModel.lastSeen),
                               style: Theme.of(context).textTheme.caption,
                             ),
                           ],
