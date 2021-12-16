@@ -33,7 +33,7 @@ ThemeData darkTheme = ThemeData(
       elevation: 20.0,
       backgroundColor: HexColor('333739'),
     ),
-    textTheme: const TextTheme(
+    textTheme: TextTheme(
       bodyText1: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w600,
@@ -45,6 +45,9 @@ ThemeData darkTheme = ThemeData(
         color: Colors.white,
         height: 1.3,
       ),
+      caption: TextStyle(
+        color: Colors.grey[300],
+      )
     )
 );
 ThemeData lightTheme = ThemeData(
@@ -76,7 +79,7 @@ ThemeData lightTheme = ThemeData(
     elevation: 20.0,
     backgroundColor: Colors.white,
   ),
-  textTheme: const TextTheme(
+  textTheme: TextTheme(
     bodyText1: TextStyle(
       fontSize: 18,
       fontWeight: FontWeight.w600,
@@ -88,5 +91,8 @@ ThemeData lightTheme = ThemeData(
       color: Colors.black,
       height: 1.3,
     ),
+      caption: TextStyle(
+        color: Colors.black38,
+      )
   ),
 );

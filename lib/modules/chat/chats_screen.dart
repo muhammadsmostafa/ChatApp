@@ -5,6 +5,7 @@ import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/modules/chat_details/chat_details_screen.dart';
 import 'package:chat_app/modules/user_profile/user_profile_screen.dart';
 import 'package:chat_app/shared/components/components.dart';
+import 'package:chat_app/shared/components/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,6 +26,7 @@ class ChatsScreen extends StatelessWidget {
               AppCubit.get(context).empty=false;
               AppCubit.get(context).changeBottomNav(4);
               AppCubit.get(context).getFollowing();
+              AppCubit.get(context).setLastSeen(hisUID: uId);
             });
             },
             child: Column(
@@ -65,12 +67,13 @@ class ChatsScreen extends StatelessWidget {
                   child: ListView.separated(
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index],AppCubit.get(context).lastMessage[index], AppCubit.get(context).dateTime[index], ),
+                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index],AppCubit.get(context).lastMessage[index], ),
                       separatorBuilder: (context, index) => myDivider(),
                       itemCount: chatUsers.length
                   ),
                 ),
               ],
+
             ),
           ),
           fallback: (context)  {
@@ -88,14 +91,14 @@ class ChatsScreen extends StatelessWidget {
                   ],
                 )
                 :
-            LinearProgressIndicator();
+                LinearProgressIndicator();
           },
         );
       },
     );
   }
 
-  Widget buildChatItem(context, UserModel model, String message, String dateTime) => Padding(
+  Widget buildChatItem(context, UserModel model, String message,) => Padding(
     padding: const EdgeInsets.all(20.0),
     child: Row(
         children:
@@ -109,11 +112,33 @@ class ChatsScreen extends StatelessWidget {
                 UserProfileScreen(model),
               );
             },
-            child: CircleAvatar(
-              radius: 25,
-              backgroundImage: NetworkImage(
-                '${model.image}',
-              ),
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                CircleAvatar(
+                  radius: 25,
+                  backgroundImage: NetworkImage(
+                    '${model.image}',
+                  ),
+                ),
+                AppCubit.get(context).wasActive(lastSeen: model.lastSeen)
+                    ?
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 8,
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    ),
+                    CircleAvatar(
+                      radius: 6,
+                      backgroundColor: Colors.green,
+                    ),
+                  ],
+                )
+                    :
+                SizedBox()
+              ],
             ),
           ),
           const SizedBox(
@@ -149,7 +174,6 @@ class ChatsScreen extends StatelessWidget {
                         Spacer(),
                         Text(
                           '',
-                          // '${dateTime}',
                           style: Theme.of(context).textTheme.subtitle1!.copyWith(
                             color: Colors.grey,
                           ),
@@ -187,19 +211,23 @@ class ChatsScreen extends StatelessWidget {
                   '${followingUserModel.image}',
                 ),
               ),
+              AppCubit.get(context).wasActive(lastSeen: followingUserModel.lastSeen)
+                  ?
               Stack(
                 alignment: Alignment.center,
                 children: [
                   CircleAvatar(
-                    radius: 9,
+                    radius: 8,
                     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   ),
                   CircleAvatar(
-                    radius: 7,
+                    radius: 6,
                     backgroundColor: Colors.green,
                   ),
                 ],
               )
+                  :
+              SizedBox()
             ],
           ),
           SizedBox(height: 10,),

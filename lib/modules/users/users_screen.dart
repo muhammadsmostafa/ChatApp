@@ -32,11 +32,7 @@ class UsersScreen extends StatelessWidget {
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                       itemBuilder: (context, index) => buildChatItem(context, AppCubit.get(context).users[index]),
                       separatorBuilder: (context, index) => myDivider(),
-                      itemCount: AppCubit.get(context).users.length > 20
-                      ?
-                      20
-                      :
-                      AppCubit.get(context).users.length
+                      itemCount: AppCubit.get(context).users.length
                   ),
                 ),
               ],
@@ -71,6 +67,8 @@ class UsersScreen extends StatelessWidget {
                     '${model.image}',
                   ),
                 ),
+                AppCubit.get(context).wasActive(lastSeen: model.lastSeen)
+                ?
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -84,6 +82,8 @@ class UsersScreen extends StatelessWidget {
                     ),
                   ],
                 )
+                :
+                SizedBox()
               ],
             ),
           ),

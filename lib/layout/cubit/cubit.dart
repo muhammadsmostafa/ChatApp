@@ -98,6 +98,9 @@ class AppCubit extends Cubit<AppStates> {
   ];
 
   bool empty = false;
+  bool indexZero = false;
+  bool indexOne = true;
+  bool indexTwo = false;
   void changeBottomNav(int index) {
     if (index == 4)
       {
@@ -107,11 +110,31 @@ class AppCubit extends Cubit<AppStates> {
     {
       if (index == 0)
         {
-          if(getChatsFinished && getFollowingFinished)
+          if(getChatsFinished && getFollowingFinished && indexZero)
           {
           getChats();
           getFollowing();
+          setLastSeen(hisUID: uId);
           }
+          indexZero = true;
+          indexOne = false;
+          indexTwo = false;
+        }
+      if(index == 1)
+        {
+          if(getAllUsersFinished && indexOne)
+            {
+              getAllUsers();
+            }
+          indexZero = false;
+          indexOne = true;
+          indexTwo = false;
+        }
+      if(index == 2)
+      {
+        indexZero = false;
+        indexOne = false;
+        indexTwo = true;
       }
       currentIndex = index;
       emit(AppChangeBottomNavBarState());
@@ -201,20 +224,30 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   List<UserModel> users = [];
+  bool getAllUsersFinished = true;
+  int counter = 0;
   Future<dynamic> getAllUsers() async {
+    getAllUsersFinished = false;
     users = [];
+    counter = 0;
     FirebaseFirestore.instance
         .collection('users')
         .get()
         .then((value) {
       setLastSeen(hisUID: uId);
-      for (var element in value.docs) {
-        if (element.id != uId) {
-          users.add(UserModel.fromJson(element.data()));
+      if (counter <= 20)
+     {
+        for (var element in value.docs) {
+          if (element.id != uId)
+          {
+            users.add(UserModel.fromJson(element.data()));
+            counter++;
+          }
         }
-        users.shuffle();
-      }
+    }
+      users.shuffle();
       emit(AppGetAllUsersSuccessState());
+      getAllUsersFinished = true;
     }).catchError((error) {
       emit(AppGetAllUsersErrorState(error.toString()));
     });
@@ -229,7 +262,7 @@ class AppCubit extends Cubit<AppStates> {
         .doc(uId)
         .collection('chats')
         .doc(receiverId)
-        .set({'dateTime' : Timestamp.now().toString()})
+        .set({'dateTime' : Timestamp.now()})
         .then((value) {
     });
 
@@ -239,7 +272,7 @@ class AppCubit extends Cubit<AppStates> {
         .doc(receiverId)
         .collection('chats')
         .doc(userModel!.uId)
-        .set({'dateTime' : Timestamp.now().toString()})
+        .set({'dateTime' : Timestamp.now()})
         .then((value) {
     });
   }
@@ -254,6 +287,7 @@ class AppCubit extends Cubit<AppStates> {
      await FirebaseFirestore.instance.collection('users').doc(receiverId).get().then((value){
       token =value['token'];
     });
+     setLastSeen(hisUID: uId);
     MessageModel model = MessageModel(
       message: message,
       senderId: userModel!.uId,
@@ -446,7 +480,7 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   List<String> lastMessage = [];
-  List<String> dateTime = [];
+  List<Timestamp> dateTime = [];
   void getLastMessage({
     required String hisUID,
   })
@@ -464,14 +498,65 @@ class AppCubit extends Cubit<AppStates> {
             if(uId == value['senderId'])
               {
                 lastMessage.add('You: '+ value['message'].toString());
-                dateTime.add(value['dateTime'].toString());
+                dateTime.add(value['dateTime']);
               }
             else {
           lastMessage.add(value['message'].toString());
-          dateTime.add(value['dateTime'].toString());
+          dateTime.add(value['dateTime']);
         }
       });
     });
+  }
+
+  bool wasActive({
+    required Timestamp? lastSeen,
+  })
+  {
+      var now = Timestamp.now().toDate();
+      var difference = now.difference(lastSeen!.toDate());
+      if (difference.inMinutes <= 15)
+        {
+          return true;
+        }
+      else
+      {
+        return false;
+      }
+  }
+
+  String getLastSeen({
+    required Timestamp? lastSeen,
+  })
+  {
+    var now = Timestamp.now().toDate();
+    var difference = now.difference(lastSeen!.toDate());
+    if (difference.inHours < 24)
+      {
+        if(difference.inMinutes <= 1)
+          {
+            return 'Active now';
+          }
+        else if (difference.inMinutes <= 60)
+          {
+            return 'Active ${difference.inMinutes} minutes ago';
+          }
+        else
+          {
+            return 'Active ${difference.inHours} hours ago';
+          }
+      }
+    else if (difference.inDays <= 30)
+      {
+        if(difference.inDays < 2)
+        {
+          return 'last seen yesterday';
+        }
+        else
+        {
+          return 'last seen ${difference.inDays} days ago';
+        }
+      }
+    return 'last seen along time ago';
   }
 
   void setLastSeen({
