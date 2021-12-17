@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:chat_app/layout/cubit/states.dart';
+import 'package:chat_app/models/chat_model.dart';
 import 'package:chat_app/models/message_model.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/modules/chat/chats_screen.dart';
 import 'package:chat_app/modules/profile/profile_screen.dart';
-import 'package:chat_app/modules/users/users_screen.dart';import 'package:chat_app/shared/components/constants.dart';
+import 'package:chat_app/modules/users/users_screen.dart';
+import 'package:chat_app/shared/components/constants.dart';
 import 'package:chat_app/shared/network/local/cashe_helper.dart';
 import 'package:chat_app/shared/network/remote/dio_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,33 +33,55 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  List<UserModel> chatUsers =[];
-  bool getChatsFinished = true;
+  late UserModel thisUserModel;
+  void getSpecificUserData({
+  required String? UID
+  }) {
+    FirebaseFirestore.instance.collection('users').doc(UID).get().then((value) {
+      thisUserModel = UserModel.fromJson(value.data());
+      emit(AppGetUserSuccessState());
+    }).catchError((error) {
+      emit(AppGetUserErrorState(error.toString()));
+    });
+  }
+
+  late ChatModel thisChatModel;
+  Future<void> getSpecificChat({
+    required String? UID
+  }) async {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId)
+        .collection('chats')
+        .get()
+        .then((value){
+      for(var element in value.docs)
+      {
+        if(UID==element['receiverId'])
+          {
+            thisChatModel = ChatModel.fromJson(element.data());
+          }
+      }
+      emit(AppGetChatsSuccessState());
+    });
+  }
+
+  List<ChatModel> chatModel =[];
   Future <void> getChats() async {
     emit(AppGetChatsLoadingState());
-    getChatsFinished = false;
-    chatUsers=[];
-    lastMessage=[];
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
         .collection('chats')
         .orderBy('dateTime', descending: true)
-        .get()
-        .then((value){
-      for(var element in value.docs)
-      {
-        getLastMessage(hisUID: element.id);
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(element.id)
-            .snapshots()
-            .listen((value){
-            chatUsers.add(UserModel.fromJson((value.data())));
-            });
-      }
+        .snapshots()
+        .listen((value){
+        chatModel=[];
+        for(var element in value.docs)
+        {
+        chatModel.add(ChatModel.fromJson(element.data()));
+        }
       emit(AppGetChatsSuccessState());
-      getChatsFinished = true;
     });
   }
 
@@ -108,12 +132,6 @@ class AppCubit extends Cubit<AppStates> {
     {
       if (index == 0)
         {
-          if(getChatsFinished && getFollowingFinished && indexZero)
-          {
-          getChats();
-          getFollowing();
-          setLastSeen(hisUID: uId);
-          }
           indexZero = true;
           indexOne = false;
           indexTwo = false;
@@ -253,14 +271,44 @@ class AppCubit extends Cubit<AppStates> {
 
   void setupChats({
     required String? receiverId,
+    required String? receiverName,
+    String? lastMessageText,
+    String? lastMessageImage,
+    required String? receiverImage,
+    required Timestamp? lastMessageTime,
+    required String? senderOfThisMessage,
   }) {
     //set my chat
+    ChatModel myChatModel = ChatModel(
+      senderId: uId,
+      senderName: userModel!.name,
+      senderProfilePic: userModel!.image,
+      receiverId: receiverId,
+      receiverName: receiverName,
+      receiverProfilePic: receiverImage,
+      lastMessageText: lastMessageText,
+      dateTime: lastMessageTime,
+      senderOfThisMessage: senderOfThisMessage,
+    );
+
+    ChatModel chatModel = ChatModel(
+      senderId: receiverId,
+      senderName: receiverName,
+      senderProfilePic: receiverImage,
+      receiverId: uId,
+      receiverName: userModel!.name,
+      receiverProfilePic: userModel!.image,
+      lastMessageText: lastMessageText,
+      dateTime: lastMessageTime,
+      senderOfThisMessage: senderOfThisMessage,
+    );
+
     FirebaseFirestore.instance
         .collection('users')
         .doc(uId)
         .collection('chats')
         .doc(receiverId)
-        .set({'dateTime' : Timestamp.now()})
+        .set(myChatModel.toMap())
         .then((value) {
     });
 
@@ -270,7 +318,7 @@ class AppCubit extends Cubit<AppStates> {
         .doc(receiverId)
         .collection('chats')
         .doc(userModel!.uId)
-        .set({'dateTime' : Timestamp.now()})
+        .set(chatModel.toMap())
         .then((value) {
     });
   }
@@ -320,7 +368,16 @@ class AppCubit extends Cubit<AppStates> {
       }).catchError((error) {
       emit(AppSendMessageErrorState());
       });
-    setupChats(receiverId: receiverId);
+    FirebaseFirestore.instance.collection('users').doc(receiverId).get().then((value){
+      setupChats(
+          receiverId: receiverId,
+          receiverName: value['name'],
+          receiverImage: value['image'],
+          lastMessageText: message,
+          lastMessageTime: Timestamp.now(),
+          senderOfThisMessage: uId,
+      );
+    });
     sendFCMNotification(token: token, senderName: userModel!.name, messageText: message);
   }
 
@@ -522,6 +579,19 @@ class AppCubit extends Cubit<AppStates> {
       }
   }
 
+  late Timestamp lastSeen;
+  Future<void> getLastSeen({
+  required String? UID
+  })async {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(UID)
+        .get()
+        .then((value){
+        lastSeen= value['lastSeen'];
+        });
+  }
+
   String formatLastSeen({
     required Timestamp? lastSeen,
   })
@@ -588,22 +658,6 @@ class AppCubit extends Cubit<AppStates> {
       }
     }
     return 'last seen along time ago';
-  }
-
-  late Timestamp lastSeen;
-  Timestamp getLastSeen({
-  required String? UID
-  })
-  {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(UID)
-        .get()
-        .then((value){
-          lastSeen =value['lastSeen'];
-          return lastSeen;
-    });
-    return lastSeen;
   }
 
   void setLastSeen({

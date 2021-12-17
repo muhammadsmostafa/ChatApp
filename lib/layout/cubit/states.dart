@@ -4,6 +4,10 @@ class AppInitialState extends AppStates {}
 
 class AppGetUserSuccessState extends AppStates {}
 
+class AppGetSpecificUserSuccessState extends AppStates {}
+
+class AppGetSpecificUserErrorState extends AppStates {}
+
 class AppGetUserLoadingState extends AppStates {}
 
 class AppLogoutSuccessState extends AppStates {}

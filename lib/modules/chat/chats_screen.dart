@@ -1,6 +1,7 @@
 import 'package:buildcondition/buildcondition.dart';
 import 'package:chat_app/layout/cubit/cubit.dart';
 import 'package:chat_app/layout/cubit/states.dart';
+import 'package:chat_app/models/chat_model.dart';
 import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/modules/chat_details/chat_details_screen.dart';
 import 'package:chat_app/modules/user_profile/user_profile_screen.dart';
@@ -17,14 +18,12 @@ class ChatsScreen extends StatelessWidget {
     return BlocConsumer<AppCubit,AppStates>(
       listener: (context , state) {},
       builder: (context, state){
-      List<UserModel> chatUsers = AppCubit.get(context).chatUsers;
+      List<ChatModel> chatModel = AppCubit.get(context).chatModel;
         return BuildCondition(
-          condition: chatUsers.isNotEmpty || AppCubit.get(context).following.isNotEmpty,
+          condition: chatModel.isNotEmpty || AppCubit.get(context).following.isNotEmpty,
           builder: (context) => RefreshIndicator(
           onRefresh: () async {
             await AppCubit.get(context).getChats().then((value){
-              AppCubit.get(context).empty=false;
-              AppCubit.get(context).getFollowing();
               AppCubit.get(context).setLastSeen(hisUID: uId);
             });
             },
@@ -66,120 +65,88 @@ class ChatsScreen extends StatelessWidget {
                   child: ListView.separated(
                       shrinkWrap: true,
                       physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      itemBuilder: (context, index) => buildChatItem(context, chatUsers[index],AppCubit.get(context).lastMessage[index],),
+                      itemBuilder: (context, index) => buildChatItem(context, chatModel[index],),
                       separatorBuilder: (context, index) => myDivider(),
-                      itemCount: chatUsers.length
+                      itemCount: chatModel.length
                   ),
                 ),
               ],
 
             ),
           ),
-          fallback: (context)  {
-            Future.delayed(Duration(milliseconds: 700)).then((value){
-              AppCubit.get(context).changeBottomNav(4);
-              if(chatUsers.isEmpty)
-                AppCubit.get(context).empty=true;
-            });
-            return AppCubit.get(context).empty
-                ?
-                Column(
-                  children: [
-                    if(!FirebaseAuth.instance.currentUser!.emailVerified)
-                      emailNotVerifyed(context: context),
-                  ],
-                )
-                :
-                LinearProgressIndicator();
-          },
+          fallback: (context)  => LinearProgressIndicator()
         );
       },
     );
   }
 
-  Widget buildChatItem(context, UserModel model, String message,) => Padding(
-    padding: const EdgeInsets.all(20.0),
-    child: Row(
-        children:
-        [
-          InkWell(
-            onTap: ()
-            {
-              AppCubit.get(context).checkFollow(uId: model.uId);
+  Widget buildChatItem(context, ChatModel model,) => Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: InkWell(
+          onTap: ()
+          {
+            AppCubit.get(context).getLastSeen(UID: model.receiverId).then((value){
               navigateTo(
                 context,
-                UserProfileScreen(model),
+                ChatDetailsScreen(userModel: model,),
               );
-            },
-            child: Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundImage: NetworkImage(
-                    '${model.image}',
-                  ),
-                ),
-                AppCubit.get(context).wasActive(lastSeen: model.lastSeen)
-                    ?
+            });
+          },
+          child: Row(
+              children:
+              [
                 Stack(
-                  alignment: Alignment.center,
+                  alignment: Alignment.bottomRight,
                   children: [
                     CircleAvatar(
-                      radius: 8,
-                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                    ),
-                    CircleAvatar(
-                      radius: 6,
-                      backgroundColor: Colors.green,
+                      radius: 25,
+                      backgroundImage: NetworkImage(
+                        '${model.receiverProfilePic}',
+                      ),
                     ),
                   ],
-                )
-                    :
-                SizedBox()
-              ],
-            ),
-          ),
-          const SizedBox(
-            width: 15,
-          ),
-          Expanded(
-            child: InkWell(
-              onTap: ()
-              {
-                navigateTo(
-                  context,
-                  ChatDetailsScreen(userModel: model),
-                );
-              },
-              child: Container(
-                height: 60,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${model.name}',
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    Spacer(),
-                    Row(
+                ),
+                const SizedBox(
+                  width: 15,
+                ),
+                Expanded(
+                  child: Container(
+                    height: 60,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${message}',
-                          style: Theme.of(context).textTheme.subtitle1!.copyWith(
-                            color: Colors.grey,
-                          ),
+                          '${model.receiverName}',
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Spacer(),
+                        Row(
+                          children: [
+                            uId == model.senderOfThisMessage
+                            ?
+                            Text(
+                              'you: ${model.lastMessageText}',
+                              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                                color: Colors.grey,
+                              ),
+                            )
+                            :
+                            Text(
+                              '${model.lastMessageText}',
+                              style: Theme.of(context).textTheme.subtitle1!.copyWith(
+                                color: Colors.grey,
+                              ),
+                            )
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
+              ]
           ),
-        ]
-    ),
-  );
+        ),
+      );
   
   Widget buildFollowingItem(context, UserModel followingUserModel,) => Container(
     width: 70,
