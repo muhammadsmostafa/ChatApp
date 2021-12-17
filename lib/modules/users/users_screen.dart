@@ -94,10 +94,10 @@ class UsersScreen extends StatelessWidget {
             child: InkWell(
               onTap: ()
               {
-                // navigateTo(
-                //   context,
-                //   ChatDetailsScreen(userModel: model),
-                // );
+                navigateTo(
+                  context,
+                  ChatDetailsScreen(userModel: model),
+                );
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

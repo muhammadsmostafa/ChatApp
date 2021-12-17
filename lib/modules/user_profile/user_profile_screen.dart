@@ -69,17 +69,17 @@ class UserProfileScreen extends StatelessWidget {
               ),
               Row(
                 children: [
-                  // Expanded(
-                  //   child: Padding(
-                  //     padding: const EdgeInsets.all(10.0),
-                  //     child: defaultButton(
-                  //         function: (){
-                  //           navigateTo(context,
-                  //               ChatDetailsScreen(userModel: model,));
-                  //         },
-                  //         text: 'send message'),
-                  //   ),
-                  // ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: defaultButton(
+                          function: (){
+                            navigateTo(context,
+                                ChatDetailsScreen(userModel: model,));
+                          },
+                          text: 'send message'),
+                    ),
+                  ),
                   AppCubit.get(context).followHim || state is AppFollowSuccessState
                   ?
                   Expanded(

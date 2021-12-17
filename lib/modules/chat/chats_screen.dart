@@ -88,7 +88,7 @@ class ChatsScreen extends StatelessWidget {
             AppCubit.get(context).getLastSeen(UID: model.receiverId).then((value){
               navigateTo(
                 context,
-                ChatDetailsScreen(userModel: model,),
+                ChatDetailsScreen(chatModel: model,),
               );
             });
           },

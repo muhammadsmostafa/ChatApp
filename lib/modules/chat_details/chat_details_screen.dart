@@ -3,6 +3,7 @@ import 'package:chat_app/layout/cubit/cubit.dart';
 import 'package:chat_app/layout/cubit/states.dart';
 import 'package:chat_app/models/chat_model.dart';
 import 'package:chat_app/models/message_model.dart';
+import 'package:chat_app/models/user_model.dart';
 import 'package:chat_app/modules/user_profile/user_profile_screen.dart';
 import 'package:chat_app/shared/components/components.dart';
 import 'package:chat_app/shared/styles/colors.dart';
@@ -13,16 +14,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatDetailsScreen extends StatelessWidget
 {
-  ChatModel userModel;
+  ChatModel? chatModel;
+  UserModel? userModel;
   var messageController = TextEditingController();
-  ChatDetailsScreen({required this.userModel});
+  ChatDetailsScreen({this.chatModel,this.userModel});
 
   @override
   Widget build(BuildContext context) {
     return Builder(
       builder: (BuildContext context){
-        AppCubit.get(context).getMessages(receiverId: userModel.receiverId);
-        AppCubit.get(context).getSpecificUserData(UID: userModel.receiverId);
+        if(chatModel != null)
+          {
+            AppCubit.get(context).getMessages(receiverId: chatModel!.receiverId);
+            AppCubit.get(context).getSpecificUserData(UID: chatModel!.receiverId);
+          }
+        else
+          {
+            AppCubit.get(context).getMessages(receiverId: userModel!.uId);
+          }
         return BlocConsumer<AppCubit,AppStates>(
           listener: (context , state) {},
           builder: (context , state) {
@@ -42,8 +51,16 @@ class ChatDetailsScreen extends StatelessWidget
                   title: InkWell(
                     onTap: ()
                     {
-                      AppCubit.get(context).checkFollow(uId: userModel.receiverId);
-                      navigateTo(context, UserProfileScreen(AppCubit.get(context).thisUserModel));
+                      if(chatModel!=null)
+                        {
+                          AppCubit.get(context).checkFollow(uId: chatModel!.receiverId);
+                          navigateTo(context, UserProfileScreen(AppCubit.get(context).thisUserModel));
+                        }
+                      else
+                        {
+                          AppCubit.get(context).checkFollow(uId: userModel!.uId);
+                          navigateTo(context, UserProfileScreen(userModel!));
+                        }
                     },
                     child: Row(
                       children:
@@ -51,14 +68,25 @@ class ChatDetailsScreen extends StatelessWidget
                         CircleAvatar(
                           radius: 20,
                           backgroundImage: NetworkImage(
-                              '${userModel.receiverProfilePic}'
+                            chatModel!=null
+                              ?
+                              '${chatModel!.receiverProfilePic}'
+                                :
+                               '${userModel!.image}'
                           ),
                         ),
                         const SizedBox(width: 15,),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('${userModel.receiverName}'),
+                            Text
+                            (
+                              chatModel!=null
+                                ?
+                                '${chatModel!.receiverName}'
+                                :
+                              '${userModel!.name}'
+                            ),
                             Text(
                               AppCubit.get(context).formatLastSeen(lastSeen: AppCubit.get(context).lastSeen),
                               style: Theme.of(context).textTheme.caption,
@@ -86,7 +114,13 @@ class ChatDetailsScreen extends StatelessWidget
                                   return buildMyMessage(message);
                                 }
                                 else {
-                                  return buildMessage(message, userModel.receiverProfilePic);
+                                  return buildMessage(message,
+                                      chatModel!=null
+                                      ?
+                                      chatModel!.receiverProfilePic
+                                          :
+                                          userModel!.image
+                                  );
                                 }
                               },
                               separatorBuilder: (context, index) => const SizedBox(height: 15,),
@@ -167,15 +201,32 @@ class ChatDetailsScreen extends StatelessWidget
                                 {
                                   if(messageImage != null || messageController.text.isNotEmpty) {
                                     if (messageImage == null) {
+                                      chatModel!=null
+                                          ?
                                       AppCubit.get(context).sendMessage(
-                                          receiverId: userModel.receiverId,
+                                          receiverId: chatModel!.receiverId,
+                                          dateTime: DateTime.now().toString(),
+                                          message: messageController.text
+                                      )
+                                          :
+                                      AppCubit.get(context).sendMessage(
+                                          receiverId: userModel!.uId,
                                           dateTime: DateTime.now().toString(),
                                           message: messageController.text
                                       );
                                     } else {
+                                      chatModel!=null
+                                          ?
                                       AppCubit.get(context)
                                           .uploadMessageImage(
-                                          receiverId: userModel.receiverProfilePic,
+                                          receiverId: chatModel!.receiverProfilePic,
+                                          dateTime: DateTime.now().toString(),
+                                          message: messageController.text
+                                      )
+                                          :
+                                      AppCubit.get(context)
+                                          .uploadMessageImage(
+                                          receiverId: userModel!.image,
                                           dateTime: DateTime.now().toString(),
                                           message: messageController.text
                                       );

@@ -45,27 +45,6 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  late ChatModel thisChatModel;
-  Future<void> getSpecificChat({
-    required String? UID
-  }) async {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(uId)
-        .collection('chats')
-        .get()
-        .then((value){
-      for(var element in value.docs)
-      {
-        if(UID==element['receiverId'])
-          {
-            thisChatModel = ChatModel.fromJson(element.data());
-          }
-      }
-      emit(AppGetChatsSuccessState());
-    });
-  }
-
   List<ChatModel> chatModel =[];
   Future <void> getChats() async {
     emit(AppGetChatsLoadingState());
