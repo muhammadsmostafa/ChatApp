@@ -436,7 +436,6 @@ class AppCubit extends Cubit<AppStates> {
         .collection('users')
         .doc(uId)
         .collection('following')
-        .orderBy('dateTime', descending: true)
         .get()
         .then((value){
        for(var element in value.docs)
@@ -445,15 +444,14 @@ class AppCubit extends Cubit<AppStates> {
            FirebaseFirestore.instance
                .collection('users')
                .doc(element.id)
-               .snapshots()
-               .listen((value){
+               .get()
+               .then((value){
                 following.add(UserModel.fromJson((value.data())));
-           });
+                });
          }
-    }).then((value){
-      emit(AppGetFollowingSuccessState());
-      followSuccess = true;
     });
+    emit(AppGetFollowingSuccessState());
+    followSuccess = true;
   }
 
   bool followHim = false;
@@ -521,7 +519,7 @@ class AppCubit extends Cubit<AppStates> {
       }
   }
 
-  late Timestamp lastSeen;
+  Timestamp lastSeen=Timestamp.now();
   Future<void> getLastSeen({
   required String? UID
   })async {

@@ -88,7 +88,11 @@ class ChatDetailsScreen extends StatelessWidget
                               '${userModel!.name}'
                             ),
                             Text(
-                              AppCubit.get(context).formatLastSeen(lastSeen: AppCubit.get(context).lastSeen),
+                                chatModel!=null
+                                ?
+                              AppCubit.get(context).formatLastSeen(lastSeen: AppCubit.get(context).lastSeen)
+                                :
+                              AppCubit.get(context).formatLastSeen(lastSeen: userModel!.lastSeen),
                               style: Theme.of(context).textTheme.caption,
                             ),
                           ],
