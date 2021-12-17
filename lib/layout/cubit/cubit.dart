@@ -104,8 +104,12 @@ class AppCubit extends Cubit<AppStates> {
       {
         emit(AppFixError());
       }
+    else
+      {
       currentIndex = index;
       emit(AppChangeBottomNavBarState());
+      }
+
   }
 
   File? profileImage;
