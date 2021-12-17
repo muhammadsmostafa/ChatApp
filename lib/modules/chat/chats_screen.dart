@@ -19,9 +19,7 @@ class ChatsScreen extends StatelessWidget {
       listener: (context , state) {},
       builder: (context, state){
       List<ChatModel> chatModel = AppCubit.get(context).chatModel;
-        return BuildCondition(
-          condition: chatModel.isNotEmpty || AppCubit.get(context).following.isNotEmpty,
-          builder: (context) => RefreshIndicator(
+        return RefreshIndicator(
           onRefresh: () async {
             await AppCubit.get(context).getChats().then((value){
               AppCubit.get(context).setLastSeen(hisUID: uId);
@@ -68,21 +66,34 @@ class ChatsScreen extends StatelessWidget {
                     }
                   ),
                 ),
-                Expanded(
-                  child: ListView.separated(
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                      itemBuilder: (context, index) => buildChatItem(context, chatModel[index],),
-                      separatorBuilder: (context, index) => myDivider(),
-                      itemCount: chatModel.length
+                BuildCondition(
+                  condition: chatModel.isNotEmpty,
+                  builder: (context) => Expanded(
+                    child: ListView.separated(
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                        itemBuilder: (context, index) => buildChatItem(context, chatModel[index],),
+                        separatorBuilder: (context, index) => myDivider(),
+                        itemCount: chatModel.length
+                    ),
                   ),
-                ),
+                  fallback: (context) => Expanded(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'No Messages Yet',
+                            style: Theme.of(context).textTheme.bodyText1,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
               ],
-
             ),
-          ),
-          fallback: (context)  => LinearProgressIndicator()
-        );
+          );
       },
     );
   }

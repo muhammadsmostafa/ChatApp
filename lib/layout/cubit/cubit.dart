@@ -435,7 +435,6 @@ class AppCubit extends Cubit<AppStates> {
 
   List<UserModel> following = [];
   List<String> followingId = [];
-  bool followSuccess = false;
   void getFollowing() {
     emit(AppGetFollowingLoadingState());
     following = [];
@@ -459,7 +458,6 @@ class AppCubit extends Cubit<AppStates> {
          }
     });
     emit(AppGetFollowingSuccessState());
-    followSuccess = true;
   }
 
   bool followHim = false;
