@@ -98,42 +98,10 @@ class AppCubit extends Cubit<AppStates> {
     'Profile',
   ];
 
-  bool empty = false;
-  bool indexZero = false;
-  bool indexOne = true;
-  bool indexTwo = false;
+
   void changeBottomNav(int index) {
-    if (index == 4)
-      {
-        emit(AppShowSuccess());
-      }
-    else
-    {
-      if (index == 0)
-        {
-          indexZero = true;
-          indexOne = false;
-          indexTwo = false;
-        }
-      if(index == 1)
-        {
-          if(getAllUsersFinished && indexOne)
-            {
-              getAllUsers();
-            }
-          indexZero = false;
-          indexOne = true;
-          indexTwo = false;
-        }
-      if(index == 2)
-      {
-        indexZero = false;
-        indexOne = false;
-        indexTwo = true;
-      }
       currentIndex = index;
       emit(AppChangeBottomNavBarState());
-    }
   }
 
   File? profileImage;
@@ -461,11 +429,9 @@ class AppCubit extends Cubit<AppStates> {
 
   List<UserModel> following = [];
   List<String> followingId = [];
-  bool getFollowingFinished = true;
   bool followSuccess = false;
   void getFollowing() {
     emit(AppGetFollowingLoadingState());
-    getFollowingFinished = false;
     following = [];
     followingId=[];
     FirebaseFirestore.instance
@@ -488,7 +454,6 @@ class AppCubit extends Cubit<AppStates> {
          }
     }).then((value){
       emit(AppGetFollowingSuccessState());
-      getFollowingFinished = true;
       followSuccess = true;
     });
   }
