@@ -100,6 +100,10 @@ class AppCubit extends Cubit<AppStates> {
 
 
   void changeBottomNav(int index) {
+    if(index==4)
+      {
+        emit(AppFixError());
+      }
       currentIndex = index;
       emit(AppChangeBottomNavBarState());
   }

@@ -32,35 +32,42 @@ class ChatsScreen extends StatelessWidget {
               children: [
                 if(!FirebaseAuth.instance.currentUser!.emailVerified)
                     emailNotVerifyed(context: context),
-                AppCubit.get(context).following.isNotEmpty
-                ?
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsetsDirectional.only(start: 10),
-                      child: Text(
-                        'Following',
-                        style: Theme.of(context).textTheme.bodyText1,
+                BuildCondition(
+                  condition: AppCubit.get(context).following.isNotEmpty,
+                  builder: (context) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsetsDirectional.only(start: 10),
+                        child: Text(
+                          'Following',
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsetsDirectional.only(start: 10),
-                      child: Container(
-                        height: 90.0,
-                        child: ListView.separated(
+                      Padding(
+                        padding: const EdgeInsetsDirectional.only(start: 10),
+                        child: Container(
+                          height: 90.0,
+                          child: ListView.separated(
                             scrollDirection: Axis.horizontal,
                             shrinkWrap: true,
                             itemBuilder: (context, index) => buildFollowingItem(context, AppCubit.get(context).following[index],),
                             separatorBuilder: (context, index) => SizedBox(width: 10,),
                             itemCount: AppCubit.get(context).following.length,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                )
-                :
-                SizedBox(),
+                    ],
+                  ),
+                  fallback: (context) => Builder(
+                    builder: (context) {
+                      Future.delayed(Duration(milliseconds: 200)).then((value){
+                        AppCubit.get(context).changeBottomNav(4);
+                      });
+                      return SizedBox();
+                    }
+                  ),
+                ),
                 Expanded(
                   child: ListView.separated(
                       shrinkWrap: true,
