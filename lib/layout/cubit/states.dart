@@ -83,5 +83,3 @@ class AppMessageImagePickedSuccessState extends AppStates {}
 class AppSendImageMessagesErrorState extends AppStates {}
 
 class AppChangeModeState extends AppStates {}
-
-class AppShowSuccess extends AppStates {}

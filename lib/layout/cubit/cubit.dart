@@ -187,10 +187,9 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   List<UserModel> users = [];
-  bool getAllUsersFinished = true;
   int counter = 0;
   Future<dynamic> getAllUsers() async {
-    getAllUsersFinished = false;
+    emit(AppGetAllUsersLoadingState());
     users = [];
     counter = 0;
     FirebaseFirestore.instance
@@ -210,7 +209,6 @@ class AppCubit extends Cubit<AppStates> {
     }
       users.shuffle();
       emit(AppGetAllUsersSuccessState());
-      getAllUsersFinished = true;
     }).catchError((error) {
       emit(AppGetAllUsersErrorState(error.toString()));
     });
