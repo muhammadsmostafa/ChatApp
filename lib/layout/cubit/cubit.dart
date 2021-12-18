@@ -225,12 +225,12 @@ class AppCubit extends Cubit<AppStates> {
   void setupChats({
     required String? receiverId,
     required String? receiverName,
-    String? lastMessageText,
-    String? lastMessageImage,
+    required String? lastMessageText,
     required String? receiverImage,
     required Timestamp? lastMessageTime,
     required String? senderOfThisMessage,
   }) {
+
     //set my chat
     ChatModel myChatModel = ChatModel(
       senderId: uId,
@@ -239,18 +239,6 @@ class AppCubit extends Cubit<AppStates> {
       receiverId: receiverId,
       receiverName: receiverName,
       receiverProfilePic: receiverImage,
-      lastMessageText: lastMessageText,
-      dateTime: lastMessageTime,
-      senderOfThisMessage: senderOfThisMessage,
-    );
-
-    ChatModel chatModel = ChatModel(
-      senderId: receiverId,
-      senderName: receiverName,
-      senderProfilePic: receiverImage,
-      receiverId: uId,
-      receiverName: userModel!.name,
-      receiverProfilePic: userModel!.image,
       lastMessageText: lastMessageText,
       dateTime: lastMessageTime,
       senderOfThisMessage: senderOfThisMessage,
@@ -266,6 +254,18 @@ class AppCubit extends Cubit<AppStates> {
     });
 
     //set receiver chat
+    ChatModel chatModel = ChatModel(
+      senderId: receiverId,
+      senderName: receiverName,
+      senderProfilePic: receiverImage,
+      receiverId: uId,
+      receiverName: userModel!.name,
+      receiverProfilePic: userModel!.image,
+      lastMessageText: lastMessageText,
+      dateTime: lastMessageTime,
+      senderOfThisMessage: senderOfThisMessage,
+    );
+
     FirebaseFirestore.instance
         .collection('users')
         .doc(receiverId)
@@ -279,17 +279,17 @@ class AppCubit extends Cubit<AppStates> {
   late String token;
   Future<void> sendMessage({
     required String? receiverId,
-    required String dateTime,
+    required Timestamp dateTime,
     required String message,
     String? image,
   }) async {
      await FirebaseFirestore.instance.collection('users').doc(receiverId).get().then((value){
       token =value['token'];
     });
-     setLastSeen(hisUID: uId);
-    MessageModel model = MessageModel(
+      setLastSeen(hisUID: uId);
+      MessageModel model = MessageModel(
       message: message,
-      senderId: userModel!.uId,
+      senderId: uId,
       receiverId: receiverId,
       dateTime: dateTime,
       image: image ?? '',
@@ -326,7 +326,7 @@ class AppCubit extends Cubit<AppStates> {
           receiverId: receiverId,
           receiverName: value['name'],
           receiverImage: value['image'],
-          lastMessageText: message,
+          lastMessageText: image != null ? 'Image' : message,
           lastMessageTime: Timestamp.now(),
           senderOfThisMessage: uId,
       );
@@ -375,19 +375,17 @@ class AppCubit extends Cubit<AppStates> {
 
   void uploadMessageImage({
     String? receiverId,
-    required String dateTime,
+    required Timestamp dateTime,
     required String message,
-  }) {
+  }){
     emit(AppSendMessageLoadingState());
-    FirebaseFirestore.instance.collection('users').doc(receiverId).get().then((value){
-      token =value['token'];
-    });
     firebase_storage.FirebaseStorage.instance
         .ref()
         .child('messageImage/${Uri.file(messageImage!.path).pathSegments.last}')
         .putFile(messageImage!)
         .then((value) {
-      value.ref.getDownloadURL().then((value) {
+        removeMessageImage();
+        value.ref.getDownloadURL().then((value) {
         emit(AppSendMessageSuccessState());
         removeMessageImage();
         sendMessage(
@@ -396,7 +394,6 @@ class AppCubit extends Cubit<AppStates> {
           message: message,
           image: value,
         );
-        sendFCMNotification(token: token, senderName: userModel!.name, messageImage: value);
       }).catchError((error) {
         emit(AppSendMessageErrorState());
       });
@@ -569,40 +566,6 @@ class AppCubit extends Cubit<AppStates> {
           return 'last seen ${difference.inDays} days ago';
         }
       }
-    return 'last seen along time ago';
-  }
-
-  String formatLastMessageDate({
-    required Timestamp? lastMessageDate,
-  })
-  {
-    var now = Timestamp.now().toDate();
-    var difference = now.difference(lastSeen.toDate());
-    if (difference.inHours < 24)
-    {
-      if(difference.inMinutes < 60)
-      {
-        return 'from ${difference.inMinutes}';
-      }
-      else if (difference.inMinutes < 60)
-      {
-        return 'Active ${difference.inMinutes} minutes ago';
-      } else
-      {
-        return 'Active ${difference.inHours} hours ago';
-      }
-    }
-    else if (difference.inDays <= 30)
-    {
-      if(difference.inDays < 2)
-      {
-        return 'last seen yesterday';
-      }
-      else
-      {
-        return 'last seen ${difference.inDays} days ago';
-      }
-    }
     return 'last seen along time ago';
   }
 

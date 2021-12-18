@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class MessageModel
 {
   String? senderId;
   String? receiverId;
-  String? dateTime;
+  Timestamp? dateTime;
   String? message;
   String? image;
 

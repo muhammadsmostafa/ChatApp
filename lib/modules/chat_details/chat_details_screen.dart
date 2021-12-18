@@ -8,6 +8,7 @@ import 'package:chat_app/modules/user_profile/user_profile_screen.dart';
 import 'package:chat_app/shared/components/components.dart';
 import 'package:chat_app/shared/styles/colors.dart';
 import 'package:chat_app/shared/styles/icon_broken.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -209,33 +210,32 @@ class ChatDetailsScreen extends StatelessWidget
                                           ?
                                       AppCubit.get(context).sendMessage(
                                           receiverId: chatModel!.receiverId,
-                                          dateTime: DateTime.now().toString(),
+                                          dateTime: Timestamp.now(),
                                           message: messageController.text
                                       )
                                           :
                                       AppCubit.get(context).sendMessage(
                                           receiverId: userModel!.uId,
-                                          dateTime: DateTime.now().toString(),
+                                          dateTime: Timestamp.now(),
                                           message: messageController.text
                                       );
                                     } else {
-                                      chatModel!=null
+                                      chatModel != null
                                           ?
                                       AppCubit.get(context)
                                           .uploadMessageImage(
-                                          receiverId: chatModel!.receiverProfilePic,
-                                          dateTime: DateTime.now().toString(),
+                                          receiverId: chatModel!.receiverId,
+                                          dateTime: Timestamp.now(),
                                           message: messageController.text
                                       )
                                           :
                                       AppCubit.get(context)
                                           .uploadMessageImage(
-                                          receiverId: userModel!.image,
-                                          dateTime: DateTime.now().toString(),
+                                          receiverId: userModel!.uId,
+                                          dateTime: Timestamp.now(),
                                           message: messageController.text
                                       );
                                     }
-                                    AppCubit.get(context).removeMessageImage();
                                     messageController.text = '';
                                   }
                                 },

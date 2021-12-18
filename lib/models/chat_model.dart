@@ -9,8 +9,6 @@ class ChatModel
   String? receiverProfilePic;
   String? senderProfilePic;
   String? lastMessageText;
-  String? lastMessageImage;
-  String? time;
   Timestamp? dateTime;
   String? senderOfThisMessage;
 
@@ -20,8 +18,6 @@ class ChatModel
     this.receiverId,
     this.senderId,
     this.lastMessageText,
-    this.lastMessageImage,
-    this.time,
     this.receiverProfilePic,
     this.senderProfilePic,
     this.dateTime,
@@ -34,8 +30,6 @@ class ChatModel
     receiverId = json['receiverId'];
     senderId = json['senderId'];
     lastMessageText = json['lastMessageText'];
-    lastMessageImage = json['lastMessageImage'];
-    time = json['time'];
     receiverProfilePic = json['receiverProfilePic'];
     senderProfilePic = json['senderProfilePic'];
     senderOfThisMessage = json['senderOfThisMessage'];
@@ -48,8 +42,6 @@ class ChatModel
       'receiverId' : receiverId,
       'senderId' : senderId,
       'lastMessageText' : lastMessageText,
-      'lastMessageImage': lastMessageImage,
-      'time' : time,
       'receiverProfilePic' : receiverProfilePic,
       'senderProfilePic' : senderProfilePic,
       'dateTime' : dateTime,
