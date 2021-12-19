@@ -5,7 +5,6 @@ class ChatModel
   String? senderName;
   String? receiverName;
   String? receiverId;
-  String? senderId;
   String? receiverProfilePic;
   String? senderProfilePic;
   String? lastMessageText;
@@ -16,7 +15,6 @@ class ChatModel
     this.senderName,
     this.receiverName,
     this.receiverId,
-    this.senderId,
     this.lastMessageText,
     this.receiverProfilePic,
     this.senderProfilePic,
@@ -28,7 +26,6 @@ class ChatModel
     senderName = json['senderName'];
     receiverName = json['receiverName'];
     receiverId = json['receiverId'];
-    senderId = json['senderId'];
     lastMessageText = json['lastMessageText'];
     receiverProfilePic = json['receiverProfilePic'];
     senderProfilePic = json['senderProfilePic'];
@@ -40,7 +37,6 @@ class ChatModel
       'senderName' : senderName,
       'receiverName' : receiverName,
       'receiverId' : receiverId,
-      'senderId' : senderId,
       'lastMessageText' : lastMessageText,
       'receiverProfilePic' : receiverProfilePic,
       'senderProfilePic' : senderProfilePic,

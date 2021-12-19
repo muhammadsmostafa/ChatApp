@@ -233,7 +233,6 @@ class AppCubit extends Cubit<AppStates> {
 
     //set my chat
     ChatModel myChatModel = ChatModel(
-      senderId: uId,
       senderName: userModel!.name,
       senderProfilePic: userModel!.image,
       receiverId: receiverId,
@@ -255,7 +254,6 @@ class AppCubit extends Cubit<AppStates> {
 
     //set receiver chat
     ChatModel chatModel = ChatModel(
-      senderId: receiverId,
       senderName: receiverName,
       senderProfilePic: receiverImage,
       receiverId: uId,
