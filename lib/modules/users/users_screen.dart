@@ -52,7 +52,6 @@ class UsersScreen extends StatelessWidget {
           InkWell(
             onTap: ()
             {
-              AppCubit.get(context).checkFollow(uId: model.uId);
               navigateTo(
                 context,
                 UserProfileScreen(model),

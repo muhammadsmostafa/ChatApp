@@ -410,7 +410,11 @@ class AppCubit extends Cubit<AppStates> {
         .collection('following')
         .doc(userId)
         .set({'dateTime' : Timestamp.now().toString()}).then((value){
+          followingId.add(userId!);
           emit(AppFollowSuccessState());
+    }).then((value)
+    {
+      getFollowing();
     });
   }
 
@@ -424,6 +428,8 @@ class AppCubit extends Cubit<AppStates> {
         .collection('following')
         .doc(userId)
         .delete().then((value){
+          followingId.remove(userId);
+          following.removeWhere((element) => element.uId==userId);
       emit(AppUnfollowSuccessState());
     });
   }
@@ -453,20 +459,6 @@ class AppCubit extends Cubit<AppStates> {
          }
     });
     emit(AppGetFollowingSuccessState());
-  }
-
-  bool followHim = false;
-  void checkFollow({
-  String? uId
-  })
-  {
-    followHim=false;
-    followingId.forEach((element) {
-      if(element.toString()==uId)
-        {
-          followHim = true;
-        }
-    });
   }
 
   bool isDark = CasheHelper.getData(key: 'isDark') ?? false;
@@ -521,6 +513,7 @@ class AppCubit extends Cubit<AppStates> {
   }
 
   Timestamp lastSeen=Timestamp.now();
+
   Future<void> getLastSeen({
   required String? UID
   })async {
@@ -529,7 +522,7 @@ class AppCubit extends Cubit<AppStates> {
         .doc(UID)
         .get()
         .then((value){
-        lastSeen= value['lastSeen'];
+        lastSeen = value['lastSeen'];
         });
   }
 

@@ -54,12 +54,10 @@ class ChatDetailsScreen extends StatelessWidget
                     {
                       if(chatModel!=null)
                         {
-                          AppCubit.get(context).checkFollow(uId: chatModel!.receiverId);
                           navigateTo(context, UserProfileScreen(AppCubit.get(context).thisUserModel));
                         }
                       else
                         {
-                          AppCubit.get(context).checkFollow(uId: userModel!.uId);
                           navigateTo(context, UserProfileScreen(userModel!));
                         }
                     },

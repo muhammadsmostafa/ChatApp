@@ -171,7 +171,6 @@ class ChatsScreen extends StatelessWidget {
     child: InkWell(
       onTap: ()
       {
-        AppCubit.get(context).checkFollow(uId: followingUserModel.uId);
         navigateTo(context,
           UserProfileScreen(followingUserModel),
         );
